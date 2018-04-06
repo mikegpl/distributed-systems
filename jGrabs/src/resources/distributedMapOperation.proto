@@ -1,0 +1,12 @@
+option java_package = "com.agh.cs.ds.jgroups";
+option java_outer_classname = "DistributedMap";
+
+message DistributedMapOperation {
+    required string key = 1;
+    optional string value = 2;
+
+    enum OperationType{
+        UPDATE = 0;
+        REMOVE = 1;
+    }
+}
