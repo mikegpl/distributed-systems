@@ -19,29 +19,38 @@ public final class DistributedMapOperationProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required string key = 1;</code>
+     * <code>required .DistributedMapOperation.OperationType type = 1;</code>
+     */
+    boolean hasType();
+    /**
+     * <code>required .DistributedMapOperation.OperationType type = 1;</code>
+     */
+    DistributedMapOperation.OperationType getType();
+
+    /**
+     * <code>required string key = 2;</code>
      */
     boolean hasKey();
     /**
-     * <code>required string key = 1;</code>
+     * <code>required string key = 2;</code>
      */
     String getKey();
     /**
-     * <code>required string key = 1;</code>
+     * <code>required string key = 2;</code>
      */
     com.google.protobuf.ByteString
         getKeyBytes();
 
     /**
-     * <code>optional string value = 2;</code>
+     * <code>optional string value = 3;</code>
      */
     boolean hasValue();
     /**
-     * <code>optional string value = 2;</code>
+     * <code>optional string value = 3;</code>
      */
     String getValue();
     /**
-     * <code>optional string value = 2;</code>
+     * <code>optional string value = 3;</code>
      */
     com.google.protobuf.ByteString
         getValueBytes();
@@ -59,6 +68,7 @@ public final class DistributedMapOperationProtos {
       super(builder);
     }
     private DistributedMapOperation() {
+      type_ = 0;
       key_ = "";
       value_ = "";
     }
@@ -94,15 +104,26 @@ public final class DistributedMapOperationProtos {
               }
               break;
             }
-            case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000001;
-              key_ = bs;
+            case 8: {
+              int rawValue = input.readEnum();
+              OperationType value = OperationType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                type_ = rawValue;
+              }
               break;
             }
             case 18: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
+              key_ = bs;
+              break;
+            }
+            case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
               value_ = bs;
               break;
             }
@@ -221,16 +242,32 @@ public final class DistributedMapOperationProtos {
     }
 
     private int bitField0_;
-    public static final int KEY_FIELD_NUMBER = 1;
-    private volatile Object key_;
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private int type_;
     /**
-     * <code>required string key = 1;</code>
+     * <code>required .DistributedMapOperation.OperationType type = 1;</code>
      */
-    public boolean hasKey() {
+    public boolean hasType() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string key = 1;</code>
+     * <code>required .DistributedMapOperation.OperationType type = 1;</code>
+     */
+    public OperationType getType() {
+      OperationType result = OperationType.valueOf(type_);
+      return result == null ? OperationType.UPDATE : result;
+    }
+
+    public static final int KEY_FIELD_NUMBER = 2;
+    private volatile Object key_;
+    /**
+     * <code>required string key = 2;</code>
+     */
+    public boolean hasKey() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string key = 2;</code>
      */
     public String getKey() {
       Object ref = key_;
@@ -247,7 +284,7 @@ public final class DistributedMapOperationProtos {
       }
     }
     /**
-     * <code>required string key = 1;</code>
+     * <code>required string key = 2;</code>
      */
     public com.google.protobuf.ByteString
         getKeyBytes() {
@@ -263,16 +300,16 @@ public final class DistributedMapOperationProtos {
       }
     }
 
-    public static final int VALUE_FIELD_NUMBER = 2;
+    public static final int VALUE_FIELD_NUMBER = 3;
     private volatile Object value_;
     /**
-     * <code>optional string value = 2;</code>
+     * <code>optional string value = 3;</code>
      */
     public boolean hasValue() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional string value = 2;</code>
+     * <code>optional string value = 3;</code>
      */
     public String getValue() {
       Object ref = value_;
@@ -289,7 +326,7 @@ public final class DistributedMapOperationProtos {
       }
     }
     /**
-     * <code>optional string value = 2;</code>
+     * <code>optional string value = 3;</code>
      */
     public com.google.protobuf.ByteString
         getValueBytes() {
@@ -311,6 +348,10 @@ public final class DistributedMapOperationProtos {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasKey()) {
         memoizedIsInitialized = 0;
         return false;
@@ -322,10 +363,13 @@ public final class DistributedMapOperationProtos {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
+        output.writeEnum(1, type_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, value_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, key_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, value_);
       }
       unknownFields.writeTo(output);
     }
@@ -336,10 +380,14 @@ public final class DistributedMapOperationProtos {
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, type_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, value_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, key_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, value_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -357,6 +405,10 @@ public final class DistributedMapOperationProtos {
       DistributedMapOperation other = (DistributedMapOperation) obj;
 
       boolean result = true;
+      result = result && (hasType() == other.hasType());
+      if (hasType()) {
+        result = result && type_ == other.type_;
+      }
       result = result && (hasKey() == other.hasKey());
       if (hasKey()) {
         result = result && getKey()
@@ -378,6 +430,10 @@ public final class DistributedMapOperationProtos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasType()) {
+        hash = (37 * hash) + TYPE_FIELD_NUMBER;
+        hash = (53 * hash) + type_;
+      }
       if (hasKey()) {
         hash = (37 * hash) + KEY_FIELD_NUMBER;
         hash = (53 * hash) + getKey().hashCode();
@@ -515,10 +571,12 @@ public final class DistributedMapOperationProtos {
       }
       public Builder clear() {
         super.clear();
-        key_ = "";
+        type_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        value_ = "";
+        key_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -546,9 +604,13 @@ public final class DistributedMapOperationProtos {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.key_ = key_;
+        result.type_ = type_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
+        }
+        result.key_ = key_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         result.value_ = value_;
         result.bitField0_ = to_bitField0_;
@@ -593,13 +655,16 @@ public final class DistributedMapOperationProtos {
 
       public Builder mergeFrom(DistributedMapOperation other) {
         if (other == DistributedMapOperation.getDefaultInstance()) return this;
+        if (other.hasType()) {
+          setType(other.getType());
+        }
         if (other.hasKey()) {
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
           key_ = other.key_;
           onChanged();
         }
         if (other.hasValue()) {
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           value_ = other.value_;
           onChanged();
         }
@@ -609,6 +674,9 @@ public final class DistributedMapOperationProtos {
       }
 
       public final boolean isInitialized() {
+        if (!hasType()) {
+          return false;
+        }
         if (!hasKey()) {
           return false;
         }
@@ -634,15 +702,51 @@ public final class DistributedMapOperationProtos {
       }
       private int bitField0_;
 
-      private Object key_ = "";
+      private int type_ = 0;
       /**
-       * <code>required string key = 1;</code>
+       * <code>required .DistributedMapOperation.OperationType type = 1;</code>
        */
-      public boolean hasKey() {
+      public boolean hasType() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string key = 1;</code>
+       * <code>required .DistributedMapOperation.OperationType type = 1;</code>
+       */
+      public OperationType getType() {
+        OperationType result = OperationType.valueOf(type_);
+        return result == null ? OperationType.UPDATE : result;
+      }
+      /**
+       * <code>required .DistributedMapOperation.OperationType type = 1;</code>
+       */
+      public Builder setType(OperationType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        type_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .DistributedMapOperation.OperationType type = 1;</code>
+       */
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private Object key_ = "";
+      /**
+       * <code>required string key = 2;</code>
+       */
+      public boolean hasKey() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string key = 2;</code>
        */
       public String getKey() {
         Object ref = key_;
@@ -659,7 +763,7 @@ public final class DistributedMapOperationProtos {
         }
       }
       /**
-       * <code>required string key = 1;</code>
+       * <code>required string key = 2;</code>
        */
       public com.google.protobuf.ByteString
           getKeyBytes() {
@@ -675,36 +779,36 @@ public final class DistributedMapOperationProtos {
         }
       }
       /**
-       * <code>required string key = 1;</code>
+       * <code>required string key = 2;</code>
        */
       public Builder setKey(
           String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         key_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string key = 1;</code>
+       * <code>required string key = 2;</code>
        */
       public Builder clearKey() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         key_ = getDefaultInstance().getKey();
         onChanged();
         return this;
       }
       /**
-       * <code>required string key = 1;</code>
+       * <code>required string key = 2;</code>
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         key_ = value;
         onChanged();
         return this;
@@ -712,13 +816,13 @@ public final class DistributedMapOperationProtos {
 
       private Object value_ = "";
       /**
-       * <code>optional string value = 2;</code>
+       * <code>optional string value = 3;</code>
        */
       public boolean hasValue() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string value = 2;</code>
+       * <code>optional string value = 3;</code>
        */
       public String getValue() {
         Object ref = value_;
@@ -735,7 +839,7 @@ public final class DistributedMapOperationProtos {
         }
       }
       /**
-       * <code>optional string value = 2;</code>
+       * <code>optional string value = 3;</code>
        */
       public com.google.protobuf.ByteString
           getValueBytes() {
@@ -751,36 +855,36 @@ public final class DistributedMapOperationProtos {
         }
       }
       /**
-       * <code>optional string value = 2;</code>
+       * <code>optional string value = 3;</code>
        */
       public Builder setValue(
           String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         value_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string value = 2;</code>
+       * <code>optional string value = 3;</code>
        */
       public Builder clearValue() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         value_ = getDefaultInstance().getValue();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string value = 2;</code>
+       * <code>optional string value = 3;</code>
        */
       public Builder setValueBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         value_ = value;
         onChanged();
         return this;
@@ -848,11 +952,12 @@ public final class DistributedMapOperationProtos {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\035distributedMapOperation.proto\"^\n\027Distr" +
-      "ibutedMapOperation\022\013\n\003key\030\001 \002(\t\022\r\n\005value" +
-      "\030\002 \001(\t\"\'\n\rOperationType\022\n\n\006UPDATE\020\000\022\n\n\006R" +
-      "EMOVE\020\001B6\n\025com.agh.cs.ds.jgroupsB\035Distri" +
-      "butedMapOperationProtos"
+      "\n\035distributedMapOperation.proto\"\224\001\n\027Dist" +
+      "ributedMapOperation\0224\n\004type\030\001 \002(\0162&.Dist" +
+      "ributedMapOperation.OperationType\022\013\n\003key" +
+      "\030\002 \002(\t\022\r\n\005value\030\003 \001(\t\"\'\n\rOperationType\022\n" +
+      "\n\006UPDATE\020\000\022\n\n\006REMOVE\020\001B6\n\025com.agh.cs.ds." +
+      "jgroupsB\035DistributedMapOperationProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -871,7 +976,7 @@ public final class DistributedMapOperationProtos {
     internal_static_DistributedMapOperation_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DistributedMapOperation_descriptor,
-        new String[] { "Key", "Value", });
+        new String[] { "Type", "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
