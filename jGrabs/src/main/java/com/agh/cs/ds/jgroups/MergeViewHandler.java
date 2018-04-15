@@ -24,7 +24,7 @@ public class MergeViewHandler extends Thread {
             System.out.println("Member of primary partition, omitting merge changes");
         } else {
             try {
-                channel.getState(null, DistributedStringMap.STATE_ACQUISITION_TIMEOUT);
+                channel.getState(firstSubgroup.getCoord(), DistributedStringMap.STATE_ACQUISITION_TIMEOUT);
             } catch (Exception e) {
                 System.err.println(String.format("Couldn't acquire state of primary partition: %s", e));
             }

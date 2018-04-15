@@ -102,7 +102,7 @@ public final class DistributedStringMap extends ReceiverAdapter implements Simpl
                 .addProtocol(new MFC())
                 .addProtocol(new FRAG2())
                 .addProtocol(new STATE_TRANSFER())
-                .addProtocol(new SEQUENCER())
+//                .addProtocol(new SEQUENCER())
                 .addProtocol(new FLUSH());
         stack.init();
     }
@@ -146,7 +146,6 @@ public final class DistributedStringMap extends ReceiverAdapter implements Simpl
         }
     }
 
-    @SuppressWarnings("unchecked")
     // since protobuf can't handle generics, there's no fast and elegant way of making DistributedStringMap a generic one
     @Override
     public void setState(InputStream input) throws Exception {
