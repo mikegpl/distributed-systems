@@ -8,6 +8,7 @@ val akkaVersion = "2.5.12"
 // Akka Actors deps
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-remote" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test
 )
 
