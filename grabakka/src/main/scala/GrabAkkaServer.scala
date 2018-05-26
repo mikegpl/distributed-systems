@@ -1,12 +1,15 @@
+import java.io.File
+
+import akka.actor.{ActorSystem, Props}
+import com.typesafe.config.ConfigFactory
+
 object GrabAkkaServer {
+  val ConfigPath = "./server.conf"
+
   def main(args: Array[String]): Unit = {
-    println("Server")
+    val config = ConfigFactory.parseFile(new File(ConfigPath))
+    val system = ActorSystem(config.getString("system-name"), config)
+    val actor = system.actorOf(Props(new ServerActor()), config.getString("actor-name"))
+    while (true) {}
   }
 }
-
-/*
-mainActor.receive => :Find   => FindActor().find
-                  => :Stream => StreamActor().stream
-                  => :Order  => OrderActor().order
-
- */
