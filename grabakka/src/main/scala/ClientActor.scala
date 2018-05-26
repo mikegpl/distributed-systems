@@ -3,7 +3,7 @@ import message._
 
 final class ClientActor(serverPath: String) extends Actor {
 
-  import Workers._
+  import ClientWorkers._
 
   private val server = context.actorSelection(serverPath)
 
@@ -36,20 +36,16 @@ sealed abstract class ClientWorker(order: ClientRequest, server: ActorSelection)
   def handleResponse(value: ServerResponse)
 }
 
-object Workers {
+object ClientWorkers {
 
   case class FindWorker(order: Requests.Find, server: ActorSelection) extends ClientWorker(order, server) {
-    private var responsesCount = 0
-
     override def handleResponse(response: ServerResponse): Unit = response match {
       case _: Responses.NotFound =>
-        responsesCount += 1
-        if (responsesCount == 2) {
-          println(s"Book ${order.title} not found")
-          context.stop(self)
-        }
+        println(s"Book ${order.title} not found")
+        context.stop(self)
       case Responses.Find.BookPrice(price) =>
         println(s"${order.title} costs $price")
+        context.stop(self)
       case _ => unexpectedMessage()
     }
   }
@@ -59,7 +55,7 @@ object Workers {
       case _: Responses.NotFound =>
         println(s"Book ${order.title} not found")
       case _: Responses.Order.Confirmation =>
-        println("Order confirmed for $title")
+        println(s"Order confirmed for ${order.title}")
         context.stop(self)
       case _ => unexpectedMessage()
     }
