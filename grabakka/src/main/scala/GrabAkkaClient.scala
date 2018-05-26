@@ -19,9 +19,9 @@ object GrabAkkaClient {
     while (isRunning) {
       val input = StdIn.readLine()
       input.split("#") match {
-        case Array("f", title) => actor ! Find(title)
-        case Array("o", title) => actor ! Order(title)
-        case Array("s", title) => actor ! Stream(title)
+        case Array("f", title) => actor ! Find(title.trim)
+        case Array("o", title) => actor ! Order(title.trim)
+        case Array("s", title) => actor ! Stream(title.trim)
         case _ =>
           actor ! "q"
           isRunning = false
