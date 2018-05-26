@@ -2,10 +2,16 @@ import java.io.File
 import java.nio.file.{Files, Paths, StandardOpenOption}
 
 import ServerWorkers.{FindWorker, OrderWorker, StreamWorker}
+import akka.Done
 import akka.actor.{Actor, ActorRef, Props}
+import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.{ActorMaterializer, ActorMaterializerSettings, ThrottleMode}
 import message.{ClientRequest, Requests, Responses, ServerResponse}
 
-import scala.io.Source
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration._
+
 
 final class ServerActor extends Actor {
   override def receive: Receive = {
@@ -85,7 +91,7 @@ object ServerWorkers {
       }
 
       private def findInDb(title: String): Unit = {
-        val response = Source.fromFile(new File(filename)).getLines().toStream
+        val response = scala.io.Source.fromFile(new File(filename)).getLines().toStream
           .map { line =>
             val Array(bookTitle, price) = line.split("#")
             (bookTitle.trim, price.toDouble)
@@ -120,8 +126,29 @@ object ServerWorkers {
   }
 
   case class StreamWorker() extends ServerWorker {
-    override def handleRequest(request: ClientRequest): Unit = {
-      println(request)
+    private var target: ActorRef = _
+
+    override def handleRequest(request: ClientRequest): Unit = request match {
+      case Requests.Stream(title) =>
+        streamBook(title)
+        target = sender
+      case _ => unexpectedMessage()
+    }
+
+    implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(context.system))
+
+    private def streamBook(title: String): Unit = {
+      val fileName = s"./books/$title.txt"
+      val sink: Sink[String, Future[Done]] = Sink.foreach(line => target ! Responses.Stream.NextLine(line))
+      try {
+        Source.fromIterator(() => scala.io.Source.fromFile(fileName).getLines())
+          .throttle(1, 1.second, 1, ThrottleMode.shaping)
+          .runWith(sink)
+          .onComplete(_ => target ! Responses.Stream.EndOfStream)
+      } catch {
+        case _: Throwable => target ! Responses.NotFound(title)
+      }
+
     }
   }
 
