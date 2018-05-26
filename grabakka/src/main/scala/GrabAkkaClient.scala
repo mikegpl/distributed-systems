@@ -1,8 +1,8 @@
 import java.io.File
 
-import message.Requests._
 import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
+import message.Requests._
 
 import scala.io.StdIn
 
@@ -22,7 +22,7 @@ object GrabAkkaClient {
         case Array("f", title) => actor ! Find(title)
         case Array("o", title) => actor ! Order(title)
         case Array("s", title) => actor ! Stream(title)
-        case Array("q") =>
+        case _ =>
           actor ! "q"
           isRunning = false
       }
