@@ -1,7 +1,9 @@
+package actors
+
 import java.io.File
 import java.nio.file.{Files, Paths, StandardOpenOption}
 
-import ServerWorkers.{FindWorker, OrderWorker, StreamWorker}
+import actors.ServerWorkers.{FindWorker, OrderWorker, StreamWorker}
 import akka.Done
 import akka.actor.{Actor, ActorRef, Props}
 import akka.stream.scaladsl.{Sink, Source}
@@ -46,9 +48,10 @@ sealed abstract class ServerWorker() extends Actor {
     context.stop(self)
   }
 
-  def handleRequest(request: ClientRequest)
+  def handleRequest(request: ClientRequest): Unit
 
-  def handleResponse(response: ServerResponse): Unit = {}
+  def handleResponse(response: ServerResponse): Unit = unexpectedMessage()
+
 }
 
 object ServerWorkers {
@@ -93,10 +96,10 @@ object ServerWorkers {
       private def findInDb(title: String): Unit = {
         val response = scala.io.Source.fromFile(new File(filename)).getLines().toStream
           .map { line =>
-            val Array(bookTitle, price) = line.split("#")
-            (bookTitle.trim, price.toDouble)
+            val Array(titleString, priceString) = line.split("#")
+            (titleString.trim, priceString.toDouble)
           }
-          .find { case (bookTitle: String, price: Double) => title == bookTitle }
+          .find { case (bookTitle: String, _: Double) => title == bookTitle }
           .map { case (_: String, price: Double) => Responses.Find.BookPrice(price) }
           .getOrElse(Responses.NotFound(title))
 
@@ -115,7 +118,7 @@ object ServerWorkers {
     def makeOrder(title: String): Unit = {
       try {
         synchronized {
-          Files.write(Paths.get(OrderFileName), (title + "\n").getBytes, StandardOpenOption.APPEND)
+          Files.write(Paths.get(OrderFileName), (title + "\n").getBytes, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
         }
         sender ! Responses.Order.Confirmation(title)
       }
@@ -142,7 +145,7 @@ object ServerWorkers {
       val sink: Sink[String, Future[Done]] = Sink.foreach(line => target ! Responses.Stream.NextLine(line))
       try {
         Source.fromIterator(() => scala.io.Source.fromFile(fileName).getLines())
-          .throttle(1, 1.second, 1, ThrottleMode.shaping)
+          .throttle(elements = 1, per = 1.second, maximumBurst = 1, mode = ThrottleMode.shaping)
           .runWith(sink)
           .onComplete(_ => target ! Responses.Stream.EndOfStream)
       } catch {

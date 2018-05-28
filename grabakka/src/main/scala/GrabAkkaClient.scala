@@ -1,5 +1,6 @@
 import java.io.File
 
+import actors.ClientActor
 import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
 import message.Requests._
