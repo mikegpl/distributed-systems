@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths, StandardOpenOption}
 
 import actors.ServerWorker.{FindWorker, OrderWorker, StreamWorker}
 import akka.Done
-import akka.actor.SupervisorStrategy.{Resume, Stop}
+import akka.actor.SupervisorStrategy.{Restart, Resume, Stop}
 import akka.actor.{Actor, ActorRef, OneForOneStrategy, Props}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, ThrottleMode}
@@ -19,7 +19,7 @@ import scala.concurrent.duration._
 final class ServerActor extends Actor {
   override val supervisorStrategy: OneForOneStrategy =
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
-      case _: Throwable => Resume
+      case _: Throwable => Restart
     }
 
   override def receive: Receive = {

@@ -1,13 +1,21 @@
 package actors
 
-import akka.actor.{Actor, ActorSelection, Props}
+import akka.actor.SupervisorStrategy.Restart
+import akka.actor.{Actor, ActorSelection, OneForOneStrategy, Props}
 import message._
+
+import scala.concurrent.duration._
 
 final class ClientActor(serverPath: String) extends Actor {
 
   import ClientWorker._
 
   private val server = context.actorSelection(serverPath)
+
+  override val supervisorStrategy: OneForOneStrategy =
+    OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
+      case _: Throwable => Restart
+    }
 
   override def receive: Receive = {
     case f: Requests.Find => context.actorOf(Props(FindWorker(f, server)))
