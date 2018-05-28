@@ -5,7 +5,7 @@ import message._
 
 final class ClientActor(serverPath: String) extends Actor {
 
-  import ClientWorkers._
+  import ClientWorker._
 
   private val server = context.actorSelection(serverPath)
 
@@ -38,14 +38,14 @@ sealed abstract class ClientWorker(order: ClientRequest, server: ActorSelection)
   def handleResponse(value: ServerResponse)
 }
 
-object ClientWorkers {
+object ClientWorker {
 
   case class FindWorker(order: Requests.Find, server: ActorSelection) extends ClientWorker(order, server) {
     override def handleResponse(response: ServerResponse): Unit = response match {
-      case _: Responses.NotFound =>
+      case _: ServerResponse.NotFound =>
         println(s"Book ${order.title} not found")
         context.stop(self)
-      case Responses.Find.BookPrice(price) =>
+      case ServerResponse.Find.BookPrice(price) =>
         println(s"${order.title} costs $price")
         context.stop(self)
       case _ => unexpectedMessage()
@@ -54,9 +54,9 @@ object ClientWorkers {
 
   case class OrderWorker(order: Requests.Order, server: ActorSelection) extends ClientWorker(order, server) {
     override def handleResponse(response: ServerResponse): Unit = response match {
-      case _: Responses.NotFound =>
+      case _: ServerResponse.NotFound =>
         println(s"Book ${order.title} not found")
-      case _: Responses.Order.Confirmation =>
+      case _: ServerResponse.Order.Confirmation =>
         println(s"Order confirmed for ${order.title}")
         context.stop(self)
       case _ => unexpectedMessage()
@@ -65,11 +65,12 @@ object ClientWorkers {
 
   case class StreamWorker(stream: Requests.Stream, server: ActorSelection) extends ClientWorker(stream, server) {
     override def handleResponse(response: ServerResponse): Unit = response match {
-      case _: Responses.NotFound =>
+      case _: ServerResponse.NotFound =>
         println(s"Book ${stream.title} not found")
-      case Responses.Stream.NextLine(line) =>
+        context.stop(self)
+      case ServerResponse.Stream.NextLine(line) =>
         println(s"${stream.title} > $line")
-      case _: Responses.Stream.EndOfStream =>
+      case _: ServerResponse.Stream.EndOfStream =>
         println(s"This is the end, beautiful friend... ${stream.title}")
         context.stop(self)
       case _ => unexpectedMessage()

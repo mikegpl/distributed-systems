@@ -2,9 +2,9 @@ package message
 
 sealed trait ServerResponse
 
-object Responses {
+object ServerResponse {
 
-  case class NotFound(title: String) extends ServerResponse
+  case class NotFound() extends ServerResponse
 
   object Find {
 

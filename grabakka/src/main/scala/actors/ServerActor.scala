@@ -1,14 +1,15 @@
 package actors
 
-import java.io.File
+import java.io.{File, FileNotFoundException}
 import java.nio.file.{Files, Paths, StandardOpenOption}
 
-import actors.ServerWorkers.{FindWorker, OrderWorker, StreamWorker}
+import actors.ServerWorker.{FindWorker, OrderWorker, StreamWorker}
 import akka.Done
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.SupervisorStrategy.{Resume, Stop}
+import akka.actor.{Actor, ActorRef, OneForOneStrategy, Props}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, ThrottleMode}
-import message.{ClientRequest, Requests, Responses, ServerResponse}
+import message.{ClientRequest, Requests, ServerResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -16,6 +17,11 @@ import scala.concurrent.duration._
 
 
 final class ServerActor extends Actor {
+  override val supervisorStrategy: OneForOneStrategy =
+    OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
+      case _: Throwable => Resume
+    }
+
   override def receive: Receive = {
     case f: Requests.Find =>
       val worker = context.actorOf(Props(FindWorker()))
@@ -43,6 +49,8 @@ sealed abstract class ServerWorker() extends Actor {
     case _ => unexpectedMessage()
   }
 
+  def handleResponse(response: ServerResponse): Unit = unexpectedMessage()
+
   def unexpectedMessage(): Unit = {
     println("Worker received invalid message")
     context.stop(self)
@@ -50,11 +58,9 @@ sealed abstract class ServerWorker() extends Actor {
 
   def handleRequest(request: ClientRequest): Unit
 
-  def handleResponse(response: ServerResponse): Unit = unexpectedMessage()
-
 }
 
-object ServerWorkers {
+object ServerWorker {
   private val DbFileNames = Seq("db1.txt", "db2.txt")
   private val OrderFileName = "orders.txt"
 
@@ -73,13 +79,13 @@ object ServerWorkers {
     }
 
     override def handleResponse(response: ServerResponse): Unit = response match {
-      case notFound: Responses.NotFound =>
+      case notFound: ServerResponse.NotFound =>
         responsesCount += 1
         if (responsesCount == 2) {
           requestSender ! notFound
           context.stop(self)
         }
-      case price: Responses.Find.BookPrice =>
+      case price: ServerResponse.Find.BookPrice =>
         requestSender ! price
         context.stop(self)
       case _ => unexpectedMessage()
@@ -87,6 +93,15 @@ object ServerWorkers {
 
 
     private case class DatabaseWorker(filename: String) extends Actor {
+      override val supervisorStrategy: OneForOneStrategy =
+        OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
+          case _: FileNotFoundException =>
+            sender ! ServerResponse.NotFound()
+            Stop
+          case _: NumberFormatException => Resume
+          case _: Throwable => Stop
+        }
+
       override def receive: Receive = {
         case Requests.Find(title) =>
           findInDb(title)
@@ -100,8 +115,8 @@ object ServerWorkers {
             (titleString.trim, priceString.toDouble)
           }
           .find { case (bookTitle: String, _: Double) => title == bookTitle }
-          .map { case (_: String, price: Double) => Responses.Find.BookPrice(price) }
-          .getOrElse(Responses.NotFound(title))
+          .map { case (_: String, price: Double) => ServerResponse.Find.BookPrice(price) }
+          .getOrElse(ServerResponse.NotFound())
 
         sender ! response
       }
@@ -120,10 +135,10 @@ object ServerWorkers {
         synchronized {
           Files.write(Paths.get(OrderFileName), (title + "\n").getBytes, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
         }
-        sender ! Responses.Order.Confirmation(title)
+        sender ! ServerResponse.Order.Confirmation(title)
       }
       catch {
-        case _: Throwable => sender ! Responses.NotFound(title)
+        case _: Throwable => sender ! ServerResponse.NotFound()
       }
     }
   }
@@ -142,16 +157,12 @@ object ServerWorkers {
 
     private def streamBook(title: String): Unit = {
       val fileName = s"./books/$title.txt"
-      val sink: Sink[String, Future[Done]] = Sink.foreach(line => target ! Responses.Stream.NextLine(line))
-      try {
-        Source.fromIterator(() => scala.io.Source.fromFile(fileName).getLines())
-          .throttle(elements = 1, per = 1.second, maximumBurst = 1, mode = ThrottleMode.shaping)
-          .runWith(sink)
-          .onComplete(_ => target ! Responses.Stream.EndOfStream)
-      } catch {
-        case _: Throwable => target ! Responses.NotFound(title)
-      }
-
+      val sink: Sink[String, Future[Done]] = Sink.foreach(line => target ! ServerResponse.Stream.NextLine(line))
+      Source.fromIterator(() => scala.io.Source.fromFile(fileName).getLines())
+        .throttle(elements = 1, per = 1.second, maximumBurst = 1, mode = ThrottleMode.shaping)
+        .runWith(sink)
+        .recover { case _: Throwable => target ! ServerResponse.NotFound() }
+        .onComplete(_ => target ! ServerResponse.Stream.EndOfStream)
     }
   }
 
