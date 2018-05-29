@@ -132,9 +132,7 @@ object ServerWorker {
 
     def makeOrder(title: String): Unit = {
       try {
-        synchronized {
-          Files.write(Paths.get(OrderFileName), (title + "\n").getBytes, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
-        }
+        Files.write(Paths.get(OrderFileName), (title + "\n").getBytes, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
         sender ! ServerResponse.Order.Confirmation(title)
       }
       catch {
