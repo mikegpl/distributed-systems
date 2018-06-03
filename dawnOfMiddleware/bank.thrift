@@ -39,24 +39,24 @@ struct LoanOffer {
 	2: double requestedCurrencyCost
 }
 
-exception InvalidPesel {
+exception InvalidPeselException {
 	1: string pesel,
 	2: string reason
 }
 
-exception InvalidGuid {
+exception ClientExistsException {
 	1: i64 guid,
 	2: string reason
 }
 
 service RegistrationManager {
-	BankClient registerClient(1: Person Person) throws (1: InvalidPesel e)
+	BankClient registerClient(1: Person Person) throws (1: InvalidPeselException e1, 2: ClientExistsException e2)
 }
 
 service StandardAccountManager {
-	BankClient getClientForGuid(1:i64 guid) throws (1: InvalidGuid e)
+	BankClient getClientForGuid(1:i64 guid) throws (1: ClientExistsException e)
 }
 
 service PremiumAccountManager extends StandardAccountManager {
-	LoanOffer getLoanConditionsForGuid(1:i64 guid) throws (1: InvalidGuid e)
+	LoanOffer getLoanConditionsForGuid(1:i64 guid) throws (1: ClientExistsException e)
 }
