@@ -1,34 +1,62 @@
+import sys
+
+from thrift.protocol import TBinaryProtocol, TMultiplexedProtocol
+from thrift.transport import TSocket, TTransport
+
+sys.path.append('gen_py')
+
+# services
+from gen_py.mikegpl.sr.thrift import RegistrationManager, StandardAccountManager, PremiumAccountManager
+# types
+from gen_py.mikegpl.sr.thrift.ttypes import Currency, Person
+# exceptions
+from gen_py.mikegpl.sr.thrift.ttypes import InvalidPesel, InvalidGuid
+
+DEFAULT_HOST, DEFAULT_PORT = 'localhost', 1919
+
+socket = TSocket.TSocket(host=DEFAULT_HOST, port=DEFAULT_PORT)
+# todo - what is this
+transport = TTransport.TBufferedTransport(socket)
+protocol = TBinaryProtocol.TBinaryProtocol(transport)
+
+registration_service = RegistrationManager.Client(TMultiplexedProtocol.TMultiplexedProtocol(protocol, 'registration'))
+standard_service = StandardAccountManager.Client(TMultiplexedProtocol.TMultiplexedProtocol(protocol, 'standard'))
+premium_service = PremiumAccountManager.Client(TMultiplexedProtocol.TMultiplexedProtocol(protocol, 'premium'))
+
+
 def register_client(name, surname, pesel, salary, currency):
-    # todo
-    # do sth
-    # return (Person, guid)
-    return "xD", 1
+    person = Person(name=name, surname=surname, pesel=pesel, income=salary, baseCurrency=currency)
+    try:
+        client = registration_service.registerClient(person)
+    except InvalidPesel as e:
+        print("ERROR Cannot register client with pesel {}. Reason: {}".format(e.pesel, e.reason))
+        return None, None
+    return client, client.guid
 
 
 def client_data_for_guid(guid):
-    # todo
-    # get balance
-    return 1919
+    try:
+        return standard_service.getClientForGuid(guid=guid)
+    except InvalidGuid as e:
+        print("ERROR Invalid gui {}. Reason: {}".format(e.guid, e.reason))
+        return None
 
 
 def loan_conditions_for_guid(guid):
-    # todo
-    if guid == 5:
+    try:
+        return premium_service.getLoanConditionsForGuid(guid=guid)
+    except InvalidGuid as e:
+        print("ERROR Invalid gui {}. Reason: {}".format(e.guid, e.reason))
         return None
-    else:
-        return "xD"
 
 
-def run(host, port):
-    currencies = ['usd', 'pln']
-
-    print("""Available operations: register, balance, loan, quit
-        register NAME SURNAME PESEL SALARY CURRENCY- register new account
-        balance GUID-check account's balance
+def run():
+    print("""Available operations: register, data, loan, quit
+        register NAME SURNAME PESEL SALARY CURRENCY - register new account
+        data GUID - check account's data
         loan GUID - check loan conditions""")
-    print("Available currencies: {}".format(currencies))
+    print("Available currencies: {}".format(list(Currency._VALUES_TO_NAMES.values())))
 
-    # todo - create connection
     is_running = True
     while is_running:
         command = input("client>")
@@ -47,13 +75,14 @@ def run(host, port):
                     print("Registered {} with guid {}".format(client, guid))
             except ValueError:
                 print("Invalid register command")
-        elif op == "balance":
+        elif op == "data":
             try:
                 [_, guid] = parts
-                balance = client_data_for_guid(guid)
-                print("Guid: {}\nBalance: {}".format(int(guid), balance))
+                data = client_data_for_guid(guid)
+                if data:
+                    print("Guid: {}\nData: {}".format(int(guid), data))
             except ValueError:
-                print("Invalid balance command")
+                print("Invalid data command")
         elif op == "loan":
             try:
                 [_, guid] = parts
@@ -69,4 +98,4 @@ def run(host, port):
 
 
 if __name__ == '__main__':
-    run(host="localhost", port="1919")
+    run()
