@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "mikegpl.sr.grpc";
+option java_outer_classname = "CurrencyProto";
+
+enum Currency {
+    PLN = 0;
+    USD = 1;
+    EUR = 2;
+    VEF = 3;
+}
+
+message CurrencyConverter {
+    Currency name = 1;
+    double rate = 2;
+}
+
+message CurrencyStateRequest {
+    repeated Currency currency = 1;
+}
+
+message StreamConverterStateRequest {
+    repeated Currency currency = 1;
+}
+
+message ConvertersState {
+    repeated CurrencyConverter converter = 1;
+}
+
+service CurrencyService {
+    rpc CurrentConverters(CurrencyStateRequest) returns (ConvertersState) {}
+    rpc StreamConverters(StreamConverterStateRequest) returns (stream CurrencyConverter) {}
+}
