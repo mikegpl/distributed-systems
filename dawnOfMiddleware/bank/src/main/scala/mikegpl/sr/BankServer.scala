@@ -3,7 +3,7 @@ package mikegpl.sr
 import java.net.InetSocketAddress
 
 import mikegpl.sr.services.internal.{PremiumLoanService, SynchronizedDbService}
-import mikegpl.sr.services.remote.{PremiumAccountManagerService, RegistrationManagerService, StandardAccountManagerService}
+import mikegpl.sr.services.remote.{PremiumAccountManagerService, RegistrationManagerService, StandardAccountManagerService, StreamingCurrencyService}
 import mikegpl.sr.thrift.{PremiumAccountManager, RegistrationManager, StandardAccountManager}
 import org.apache.thrift.TMultiplexedProcessor
 import org.apache.thrift.protocol.TBinaryProtocol
@@ -16,7 +16,8 @@ object BankServer {
 
   def main(args: Array[String]): Unit = {
     val dbService = new SynchronizedDbService
-    val loanService = new PremiumLoanService(dbService)
+    val currencyService = new StreamingCurrencyService().init()
+    val loanService = new PremiumLoanService(dbService, currencyService)
 
     val registrationServiceProcessor = new RegistrationManager.Processor(new RegistrationManagerService(dbService))
     val standardServiceProcessor = new StandardAccountManager.Processor(new StandardAccountManagerService(dbService))
