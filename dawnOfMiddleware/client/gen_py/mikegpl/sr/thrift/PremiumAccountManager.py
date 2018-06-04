@@ -96,7 +96,7 @@ class Processor(mikegpl.sr.thrift.StandardAccountManager.Processor, Iface, TProc
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
-        except InvalidGuid as e:
+        except ClientExistsException as e:
             msg_type = TMessageType.REPLY
             result.e = e
         except TApplicationException as ex:
@@ -205,7 +205,7 @@ class getLoanConditionsForGuid_result(object):
                     iprot.skip(ftype)
             elif fid == 1:
                 if ftype == TType.STRUCT:
-                    self.e = InvalidGuid()
+                    self.e = ClientExistsException()
                     self.e.read(iprot)
                 else:
                     iprot.skip(ftype)
@@ -246,7 +246,7 @@ class getLoanConditionsForGuid_result(object):
 all_structs.append(getLoanConditionsForGuid_result)
 getLoanConditionsForGuid_result.thrift_spec = (
     (0, TType.STRUCT, 'success', [LoanOffer, None], None, ),  # 0
-    (1, TType.STRUCT, 'e', [InvalidGuid, None], None, ),  # 1
+    (1, TType.STRUCT, 'e', [ClientExistsException, None], None, ),  # 1
 )
 fix_spec(all_structs)
 del all_structs

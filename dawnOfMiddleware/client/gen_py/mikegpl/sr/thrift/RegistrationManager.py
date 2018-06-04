@@ -63,8 +63,10 @@ class Client(Iface):
         iprot.readMessageEnd()
         if result.success is not None:
             return result.success
-        if result.e is not None:
-            raise result.e
+        if result.e1 is not None:
+            raise result.e1
+        if result.e2 is not None:
+            raise result.e2
         raise TApplicationException(TApplicationException.MISSING_RESULT, "registerClient failed: unknown result")
 
 
@@ -99,9 +101,12 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
-        except InvalidPesel as e:
+        except InvalidPeselException as e1:
             msg_type = TMessageType.REPLY
-            result.e = e
+            result.e1 = e1
+        except ClientExistsException as e2:
+            msg_type = TMessageType.REPLY
+            result.e2 = e2
         except TApplicationException as ex:
             logging.exception('TApplication exception in handler')
             msg_type = TMessageType.EXCEPTION
@@ -184,13 +189,15 @@ class registerClient_result(object):
     """
     Attributes:
      - success
-     - e
+     - e1
+     - e2
     """
 
 
-    def __init__(self, success=None, e=None,):
+    def __init__(self, success=None, e1=None, e2=None,):
         self.success = success
-        self.e = e
+        self.e1 = e1
+        self.e2 = e2
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -209,8 +216,14 @@ class registerClient_result(object):
                     iprot.skip(ftype)
             elif fid == 1:
                 if ftype == TType.STRUCT:
-                    self.e = InvalidPesel()
-                    self.e.read(iprot)
+                    self.e1 = InvalidPeselException()
+                    self.e1.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.e2 = ClientExistsException()
+                    self.e2.read(iprot)
                 else:
                     iprot.skip(ftype)
             else:
@@ -227,9 +240,13 @@ class registerClient_result(object):
             oprot.writeFieldBegin('success', TType.STRUCT, 0)
             self.success.write(oprot)
             oprot.writeFieldEnd()
-        if self.e is not None:
-            oprot.writeFieldBegin('e', TType.STRUCT, 1)
-            self.e.write(oprot)
+        if self.e1 is not None:
+            oprot.writeFieldBegin('e1', TType.STRUCT, 1)
+            self.e1.write(oprot)
+            oprot.writeFieldEnd()
+        if self.e2 is not None:
+            oprot.writeFieldBegin('e2', TType.STRUCT, 2)
+            self.e2.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -250,7 +267,8 @@ class registerClient_result(object):
 all_structs.append(registerClient_result)
 registerClient_result.thrift_spec = (
     (0, TType.STRUCT, 'success', [BankClient, None], None, ),  # 0
-    (1, TType.STRUCT, 'e', [InvalidPesel, None], None, ),  # 1
+    (1, TType.STRUCT, 'e1', [InvalidPeselException, None], None, ),  # 1
+    (2, TType.STRUCT, 'e2', [ClientExistsException, None], None, ),  # 2
 )
 fix_spec(all_structs)
 del all_structs

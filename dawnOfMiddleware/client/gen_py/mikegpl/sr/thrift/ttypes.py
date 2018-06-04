@@ -376,7 +376,7 @@ class LoanOffer(object):
         return not (self == other)
 
 
-class InvalidPesel(TException):
+class InvalidPeselException(TException):
     """
     Attributes:
      - pesel
@@ -416,7 +416,7 @@ class InvalidPesel(TException):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('InvalidPesel')
+        oprot.writeStructBegin('InvalidPeselException')
         if self.pesel is not None:
             oprot.writeFieldBegin('pesel', TType.STRING, 1)
             oprot.writeString(self.pesel.encode('utf-8') if sys.version_info[0] == 2 else self.pesel)
@@ -446,7 +446,7 @@ class InvalidPesel(TException):
         return not (self == other)
 
 
-class InvalidGuid(TException):
+class ClientExistsException(TException):
     """
     Attributes:
      - guid
@@ -486,7 +486,7 @@ class InvalidGuid(TException):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('InvalidGuid')
+        oprot.writeStructBegin('ClientExistsException')
         if self.guid is not None:
             oprot.writeFieldBegin('guid', TType.I64, 1)
             oprot.writeI64(self.guid)
@@ -543,14 +543,14 @@ LoanOffer.thrift_spec = (
     (1, TType.DOUBLE, 'baseCurrencyCost', None, None, ),  # 1
     (2, TType.DOUBLE, 'requestedCurrencyCost', None, None, ),  # 2
 )
-all_structs.append(InvalidPesel)
-InvalidPesel.thrift_spec = (
+all_structs.append(InvalidPeselException)
+InvalidPeselException.thrift_spec = (
     None,  # 0
     (1, TType.STRING, 'pesel', 'UTF8', None, ),  # 1
     (2, TType.STRING, 'reason', 'UTF8', None, ),  # 2
 )
-all_structs.append(InvalidGuid)
-InvalidGuid.thrift_spec = (
+all_structs.append(ClientExistsException)
+ClientExistsException.thrift_spec = (
     None,  # 0
     (1, TType.I64, 'guid', None, None, ),  # 1
     (2, TType.STRING, 'reason', 'UTF8', None, ),  # 2

@@ -10,13 +10,14 @@ from gen_py.mikegpl.sr.thrift import RegistrationManager, StandardAccountManager
 # types
 from gen_py.mikegpl.sr.thrift.ttypes import Currency, Person
 # exceptions
-from gen_py.mikegpl.sr.thrift.ttypes import InvalidPesel, InvalidGuid
+from gen_py.mikegpl.sr.thrift.ttypes import InvalidPeselException, ClientExistsException
 
 DEFAULT_HOST, DEFAULT_PORT = 'localhost', 1919
 
 socket = TSocket.TSocket(host=DEFAULT_HOST, port=DEFAULT_PORT)
 # todo - what is this
 transport = TTransport.TBufferedTransport(socket)
+transport.open()
 protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
 registration_service = RegistrationManager.Client(TMultiplexedProtocol.TMultiplexedProtocol(protocol, 'registration'))
@@ -25,10 +26,11 @@ premium_service = PremiumAccountManager.Client(TMultiplexedProtocol.TMultiplexed
 
 
 def register_client(name, surname, pesel, salary, currency):
-    person = Person(name=name, surname=surname, pesel=pesel, income=salary, baseCurrency=currency)
+    person = Person(name=name, surname=surname, pesel=pesel, income=salary,
+                    baseCurrency=Currency._NAMES_TO_VALUES[currency])
     try:
         client = registration_service.registerClient(person)
-    except InvalidPesel as e:
+    except InvalidPeselException as e:
         print("ERROR Cannot register client with pesel {}. Reason: {}".format(e.pesel, e.reason))
         return None, None
     return client, client.guid
@@ -37,7 +39,7 @@ def register_client(name, surname, pesel, salary, currency):
 def client_data_for_guid(guid):
     try:
         return standard_service.getClientForGuid(guid=guid)
-    except InvalidGuid as e:
+    except ClientExistsException as e:
         print("ERROR Invalid gui {}. Reason: {}".format(e.guid, e.reason))
         return None
 
@@ -45,7 +47,7 @@ def client_data_for_guid(guid):
 def loan_conditions_for_guid(guid):
     try:
         return premium_service.getLoanConditionsForGuid(guid=guid)
-    except InvalidGuid as e:
+    except ClientExistsException as e:
         print("ERROR Invalid gui {}. Reason: {}".format(e.guid, e.reason))
         return None
 
@@ -66,11 +68,11 @@ def run():
         if op == "register":
             try:
                 [_, name, surname, pesel, salary, currency] = parts
-                print("""Registering {} {} with:\nPesel: {}\nSalary: {}\nCurrency: {}\n""".format(name, surname,
-                                                                                                  int(pesel),
-                                                                                                  float(salary),
-                                                                                                  currency))
-                (client, guid) = register_client(name, surname, pesel, salary, currency)
+                print("""Registering {} {} with:\nPesel: {}\nSalary: {}\nCurrency: {}""".format(name, surname,
+                                                                                                int(pesel),
+                                                                                                float(salary),
+                                                                                                currency))
+                (client, guid) = register_client(name, surname, pesel, float(salary), currency)
                 if client:
                     print("Registered {} with guid {}".format(client, guid))
             except ValueError:
@@ -78,7 +80,7 @@ def run():
         elif op == "data":
             try:
                 [_, guid] = parts
-                data = client_data_for_guid(guid)
+                data = client_data_for_guid(int(guid))
                 if data:
                     print("Guid: {}\nData: {}".format(int(guid), data))
             except ValueError:
@@ -86,7 +88,7 @@ def run():
         elif op == "loan":
             try:
                 [_, guid] = parts
-                conditions = loan_conditions_for_guid(guid)
+                conditions = loan_conditions_for_guid(int(guid))
                 print("Guid: {}\nConditions: {}".format(int(guid), conditions))
             except ValueError:
                 print("Invalid loan command")
