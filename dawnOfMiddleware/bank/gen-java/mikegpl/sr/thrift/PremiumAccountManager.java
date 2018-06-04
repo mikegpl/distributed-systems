@@ -12,13 +12,13 @@ public class PremiumAccountManager {
 
   public interface Iface extends StandardAccountManager.Iface {
 
-    public LoanOffer getLoanConditionsForGuid(long guid) throws ClientExistsException, org.apache.thrift.TException;
+    public LoanOffer getLoanConditions(LoanInquiry inquiry) throws ClientDoesNotExistException, InvalidAccountTypeException, org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface extends StandardAccountManager .AsyncIface {
 
-    public void getLoanConditionsForGuid(long guid, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler) throws org.apache.thrift.TException;
+    public void getLoanConditions(LoanInquiry inquiry, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -42,30 +42,33 @@ public class PremiumAccountManager {
       super(iprot, oprot);
     }
 
-    public LoanOffer getLoanConditionsForGuid(long guid) throws ClientExistsException, org.apache.thrift.TException
+    public LoanOffer getLoanConditions(LoanInquiry inquiry) throws ClientDoesNotExistException, InvalidAccountTypeException, org.apache.thrift.TException
     {
-      send_getLoanConditionsForGuid(guid);
-      return recv_getLoanConditionsForGuid();
+      send_getLoanConditions(inquiry);
+      return recv_getLoanConditions();
     }
 
-    public void send_getLoanConditionsForGuid(long guid) throws org.apache.thrift.TException
+    public void send_getLoanConditions(LoanInquiry inquiry) throws org.apache.thrift.TException
     {
-      getLoanConditionsForGuid_args args = new getLoanConditionsForGuid_args();
-      args.setGuid(guid);
-      sendBase("getLoanConditionsForGuid", args);
+      getLoanConditions_args args = new getLoanConditions_args();
+      args.setInquiry(inquiry);
+      sendBase("getLoanConditions", args);
     }
 
-    public LoanOffer recv_getLoanConditionsForGuid() throws ClientExistsException, org.apache.thrift.TException
+    public LoanOffer recv_getLoanConditions() throws ClientDoesNotExistException, InvalidAccountTypeException, org.apache.thrift.TException
     {
-      getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
-      receiveBase(result, "getLoanConditionsForGuid");
+      getLoanConditions_result result = new getLoanConditions_result();
+      receiveBase(result, "getLoanConditions");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.e != null) {
-        throw result.e;
+      if (result.e1 != null) {
+        throw result.e1;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getLoanConditionsForGuid failed: unknown result");
+      if (result.e2 != null) {
+        throw result.e2;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getLoanConditions failed: unknown result");
     }
 
   }
@@ -86,35 +89,35 @@ public class PremiumAccountManager {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void getLoanConditionsForGuid(long guid, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler) throws org.apache.thrift.TException {
+    public void getLoanConditions(LoanInquiry inquiry, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getLoanConditionsForGuid_call method_call = new getLoanConditionsForGuid_call(guid, resultHandler, this, ___protocolFactory, ___transport);
+      getLoanConditions_call method_call = new getLoanConditions_call(inquiry, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class getLoanConditionsForGuid_call extends org.apache.thrift.async.TAsyncMethodCall<LoanOffer> {
-      private long guid;
-      public getLoanConditionsForGuid_call(long guid, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+    public static class getLoanConditions_call extends org.apache.thrift.async.TAsyncMethodCall<LoanOffer> {
+      private LoanInquiry inquiry;
+      public getLoanConditions_call(LoanInquiry inquiry, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.guid = guid;
+        this.inquiry = inquiry;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getLoanConditionsForGuid", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getLoanConditionsForGuid_args args = new getLoanConditionsForGuid_args();
-        args.setGuid(guid);
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getLoanConditions", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getLoanConditions_args args = new getLoanConditions_args();
+        args.setInquiry(inquiry);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public LoanOffer getResult() throws ClientExistsException, org.apache.thrift.TException {
+      public LoanOffer getResult() throws ClientDoesNotExistException, InvalidAccountTypeException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new java.lang.IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getLoanConditionsForGuid();
+        return (new Client(prot)).recv_getLoanConditions();
       }
     }
 
@@ -131,17 +134,17 @@ public class PremiumAccountManager {
     }
 
     private static <I extends Iface> java.util.Map<java.lang.String,  org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(java.util.Map<java.lang.String, org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
-      processMap.put("getLoanConditionsForGuid", new getLoanConditionsForGuid());
+      processMap.put("getLoanConditions", new getLoanConditions());
       return processMap;
     }
 
-    public static class getLoanConditionsForGuid<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getLoanConditionsForGuid_args> {
-      public getLoanConditionsForGuid() {
-        super("getLoanConditionsForGuid");
+    public static class getLoanConditions<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getLoanConditions_args> {
+      public getLoanConditions() {
+        super("getLoanConditions");
       }
 
-      public getLoanConditionsForGuid_args getEmptyArgsInstance() {
-        return new getLoanConditionsForGuid_args();
+      public getLoanConditions_args getEmptyArgsInstance() {
+        return new getLoanConditions_args();
       }
 
       protected boolean isOneway() {
@@ -153,12 +156,14 @@ public class PremiumAccountManager {
         return false;
       }
 
-      public getLoanConditionsForGuid_result getResult(I iface, getLoanConditionsForGuid_args args) throws org.apache.thrift.TException {
-        getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
+      public getLoanConditions_result getResult(I iface, getLoanConditions_args args) throws org.apache.thrift.TException {
+        getLoanConditions_result result = new getLoanConditions_result();
         try {
-          result.success = iface.getLoanConditionsForGuid(args.guid);
-        } catch (ClientExistsException e) {
-          result.e = e;
+          result.success = iface.getLoanConditions(args.inquiry);
+        } catch (ClientDoesNotExistException e1) {
+          result.e1 = e1;
+        } catch (InvalidAccountTypeException e2) {
+          result.e2 = e2;
         }
         return result;
       }
@@ -177,24 +182,24 @@ public class PremiumAccountManager {
     }
 
     private static <I extends AsyncIface> java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(java.util.Map<java.lang.String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
-      processMap.put("getLoanConditionsForGuid", new getLoanConditionsForGuid());
+      processMap.put("getLoanConditions", new getLoanConditions());
       return processMap;
     }
 
-    public static class getLoanConditionsForGuid<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getLoanConditionsForGuid_args, LoanOffer> {
-      public getLoanConditionsForGuid() {
-        super("getLoanConditionsForGuid");
+    public static class getLoanConditions<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getLoanConditions_args, LoanOffer> {
+      public getLoanConditions() {
+        super("getLoanConditions");
       }
 
-      public getLoanConditionsForGuid_args getEmptyArgsInstance() {
-        return new getLoanConditionsForGuid_args();
+      public getLoanConditions_args getEmptyArgsInstance() {
+        return new getLoanConditions_args();
       }
 
       public org.apache.thrift.async.AsyncMethodCallback<LoanOffer> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new org.apache.thrift.async.AsyncMethodCallback<LoanOffer>() { 
           public void onComplete(LoanOffer o) {
-            getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
+            getLoanConditions_result result = new getLoanConditions_result();
             result.success = o;
             try {
               fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -209,10 +214,14 @@ public class PremiumAccountManager {
           public void onError(java.lang.Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
-            getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
-            if (e instanceof ClientExistsException) {
-              result.e = (ClientExistsException) e;
-              result.setEIsSet(true);
+            getLoanConditions_result result = new getLoanConditions_result();
+            if (e instanceof ClientDoesNotExistException) {
+              result.e1 = (ClientDoesNotExistException) e;
+              result.setE1IsSet(true);
+              msg = result;
+            } else if (e instanceof InvalidAccountTypeException) {
+              result.e2 = (InvalidAccountTypeException) e;
+              result.setE2IsSet(true);
               msg = result;
             } else if (e instanceof org.apache.thrift.transport.TTransportException) {
               _LOGGER.error("TTransportException inside handler", e);
@@ -241,26 +250,26 @@ public class PremiumAccountManager {
         return false;
       }
 
-      public void start(I iface, getLoanConditionsForGuid_args args, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler) throws org.apache.thrift.TException {
-        iface.getLoanConditionsForGuid(args.guid,resultHandler);
+      public void start(I iface, getLoanConditions_args args, org.apache.thrift.async.AsyncMethodCallback<LoanOffer> resultHandler) throws org.apache.thrift.TException {
+        iface.getLoanConditions(args.inquiry,resultHandler);
       }
     }
 
   }
 
-  public static class getLoanConditionsForGuid_args implements org.apache.thrift.TBase<getLoanConditionsForGuid_args, getLoanConditionsForGuid_args._Fields>, java.io.Serializable, Cloneable, Comparable<getLoanConditionsForGuid_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getLoanConditionsForGuid_args");
+  public static class getLoanConditions_args implements org.apache.thrift.TBase<getLoanConditions_args, getLoanConditions_args._Fields>, java.io.Serializable, Cloneable, Comparable<getLoanConditions_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getLoanConditions_args");
 
-    private static final org.apache.thrift.protocol.TField GUID_FIELD_DESC = new org.apache.thrift.protocol.TField("guid", org.apache.thrift.protocol.TType.I64, (short)1);
+    private static final org.apache.thrift.protocol.TField INQUIRY_FIELD_DESC = new org.apache.thrift.protocol.TField("inquiry", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getLoanConditionsForGuid_argsStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getLoanConditionsForGuid_argsTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getLoanConditions_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getLoanConditions_argsTupleSchemeFactory();
 
-    public long guid; // required
+    public LoanInquiry inquiry; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      GUID((short)1, "guid");
+      INQUIRY((short)1, "inquiry");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -275,8 +284,8 @@ public class PremiumAccountManager {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // GUID
-            return GUID;
+          case 1: // INQUIRY
+            return INQUIRY;
           default:
             return null;
         }
@@ -317,76 +326,74 @@ public class PremiumAccountManager {
     }
 
     // isset id assignments
-    private static final int __GUID_ISSET_ID = 0;
-    private byte __isset_bitfield = 0;
     public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.GUID, new org.apache.thrift.meta_data.FieldMetaData("guid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.INQUIRY, new org.apache.thrift.meta_data.FieldMetaData("inquiry", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LoanInquiry.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getLoanConditionsForGuid_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getLoanConditions_args.class, metaDataMap);
     }
 
-    public getLoanConditionsForGuid_args() {
+    public getLoanConditions_args() {
     }
 
-    public getLoanConditionsForGuid_args(
-      long guid)
+    public getLoanConditions_args(
+      LoanInquiry inquiry)
     {
       this();
-      this.guid = guid;
-      setGuidIsSet(true);
+      this.inquiry = inquiry;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getLoanConditionsForGuid_args(getLoanConditionsForGuid_args other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.guid = other.guid;
+    public getLoanConditions_args(getLoanConditions_args other) {
+      if (other.isSetInquiry()) {
+        this.inquiry = new LoanInquiry(other.inquiry);
+      }
     }
 
-    public getLoanConditionsForGuid_args deepCopy() {
-      return new getLoanConditionsForGuid_args(this);
+    public getLoanConditions_args deepCopy() {
+      return new getLoanConditions_args(this);
     }
 
     @Override
     public void clear() {
-      setGuidIsSet(false);
-      this.guid = 0;
+      this.inquiry = null;
     }
 
-    public long getGuid() {
-      return this.guid;
+    public LoanInquiry getInquiry() {
+      return this.inquiry;
     }
 
-    public getLoanConditionsForGuid_args setGuid(long guid) {
-      this.guid = guid;
-      setGuidIsSet(true);
+    public getLoanConditions_args setInquiry(LoanInquiry inquiry) {
+      this.inquiry = inquiry;
       return this;
     }
 
-    public void unsetGuid() {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __GUID_ISSET_ID);
+    public void unsetInquiry() {
+      this.inquiry = null;
     }
 
-    /** Returns true if field guid is set (has been assigned a value) and false otherwise */
-    public boolean isSetGuid() {
-      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __GUID_ISSET_ID);
+    /** Returns true if field inquiry is set (has been assigned a value) and false otherwise */
+    public boolean isSetInquiry() {
+      return this.inquiry != null;
     }
 
-    public void setGuidIsSet(boolean value) {
-      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __GUID_ISSET_ID, value);
+    public void setInquiryIsSet(boolean value) {
+      if (!value) {
+        this.inquiry = null;
+      }
     }
 
     public void setFieldValue(_Fields field, java.lang.Object value) {
       switch (field) {
-      case GUID:
+      case INQUIRY:
         if (value == null) {
-          unsetGuid();
+          unsetInquiry();
         } else {
-          setGuid((java.lang.Long)value);
+          setInquiry((LoanInquiry)value);
         }
         break;
 
@@ -395,8 +402,8 @@ public class PremiumAccountManager {
 
     public java.lang.Object getFieldValue(_Fields field) {
       switch (field) {
-      case GUID:
-        return getGuid();
+      case INQUIRY:
+        return getInquiry();
 
       }
       throw new java.lang.IllegalStateException();
@@ -409,8 +416,8 @@ public class PremiumAccountManager {
       }
 
       switch (field) {
-      case GUID:
-        return isSetGuid();
+      case INQUIRY:
+        return isSetInquiry();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -419,23 +426,23 @@ public class PremiumAccountManager {
     public boolean equals(java.lang.Object that) {
       if (that == null)
         return false;
-      if (that instanceof getLoanConditionsForGuid_args)
-        return this.equals((getLoanConditionsForGuid_args)that);
+      if (that instanceof getLoanConditions_args)
+        return this.equals((getLoanConditions_args)that);
       return false;
     }
 
-    public boolean equals(getLoanConditionsForGuid_args that) {
+    public boolean equals(getLoanConditions_args that) {
       if (that == null)
         return false;
       if (this == that)
         return true;
 
-      boolean this_present_guid = true;
-      boolean that_present_guid = true;
-      if (this_present_guid || that_present_guid) {
-        if (!(this_present_guid && that_present_guid))
+      boolean this_present_inquiry = true && this.isSetInquiry();
+      boolean that_present_inquiry = true && that.isSetInquiry();
+      if (this_present_inquiry || that_present_inquiry) {
+        if (!(this_present_inquiry && that_present_inquiry))
           return false;
-        if (this.guid != that.guid)
+        if (!this.inquiry.equals(that.inquiry))
           return false;
       }
 
@@ -446,25 +453,27 @@ public class PremiumAccountManager {
     public int hashCode() {
       int hashCode = 1;
 
-      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(guid);
+      hashCode = hashCode * 8191 + ((isSetInquiry()) ? 131071 : 524287);
+      if (isSetInquiry())
+        hashCode = hashCode * 8191 + inquiry.hashCode();
 
       return hashCode;
     }
 
     @Override
-    public int compareTo(getLoanConditionsForGuid_args other) {
+    public int compareTo(getLoanConditions_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
 
       int lastComparison = 0;
 
-      lastComparison = java.lang.Boolean.valueOf(isSetGuid()).compareTo(other.isSetGuid());
+      lastComparison = java.lang.Boolean.valueOf(isSetInquiry()).compareTo(other.isSetInquiry());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetGuid()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.guid, other.guid);
+      if (isSetInquiry()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.inquiry, other.inquiry);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -486,11 +495,15 @@ public class PremiumAccountManager {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("getLoanConditionsForGuid_args(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getLoanConditions_args(");
       boolean first = true;
 
-      sb.append("guid:");
-      sb.append(this.guid);
+      sb.append("inquiry:");
+      if (this.inquiry == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.inquiry);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -499,6 +512,9 @@ public class PremiumAccountManager {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (inquiry != null) {
+        inquiry.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -511,23 +527,21 @@ public class PremiumAccountManager {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
       }
     }
 
-    private static class getLoanConditionsForGuid_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getLoanConditionsForGuid_argsStandardScheme getScheme() {
-        return new getLoanConditionsForGuid_argsStandardScheme();
+    private static class getLoanConditions_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getLoanConditions_argsStandardScheme getScheme() {
+        return new getLoanConditions_argsStandardScheme();
       }
     }
 
-    private static class getLoanConditionsForGuid_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getLoanConditionsForGuid_args> {
+    private static class getLoanConditions_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<getLoanConditions_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getLoanConditionsForGuid_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getLoanConditions_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -537,10 +551,11 @@ public class PremiumAccountManager {
             break;
           }
           switch (schemeField.id) {
-            case 1: // GUID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                struct.guid = iprot.readI64();
-                struct.setGuidIsSet(true);
+            case 1: // INQUIRY
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.inquiry = new LoanInquiry();
+                struct.inquiry.read(iprot);
+                struct.setInquiryIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -556,47 +571,50 @@ public class PremiumAccountManager {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getLoanConditionsForGuid_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getLoanConditions_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldBegin(GUID_FIELD_DESC);
-        oprot.writeI64(struct.guid);
-        oprot.writeFieldEnd();
+        if (struct.inquiry != null) {
+          oprot.writeFieldBegin(INQUIRY_FIELD_DESC);
+          struct.inquiry.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
 
     }
 
-    private static class getLoanConditionsForGuid_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getLoanConditionsForGuid_argsTupleScheme getScheme() {
-        return new getLoanConditionsForGuid_argsTupleScheme();
+    private static class getLoanConditions_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getLoanConditions_argsTupleScheme getScheme() {
+        return new getLoanConditions_argsTupleScheme();
       }
     }
 
-    private static class getLoanConditionsForGuid_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getLoanConditionsForGuid_args> {
+    private static class getLoanConditions_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<getLoanConditions_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getLoanConditionsForGuid_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getLoanConditions_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
-        if (struct.isSetGuid()) {
+        if (struct.isSetInquiry()) {
           optionals.set(0);
         }
         oprot.writeBitSet(optionals, 1);
-        if (struct.isSetGuid()) {
-          oprot.writeI64(struct.guid);
+        if (struct.isSetInquiry()) {
+          struct.inquiry.write(oprot);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getLoanConditionsForGuid_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getLoanConditions_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.guid = iprot.readI64();
-          struct.setGuidIsSet(true);
+          struct.inquiry = new LoanInquiry();
+          struct.inquiry.read(iprot);
+          struct.setInquiryIsSet(true);
         }
       }
     }
@@ -606,22 +624,25 @@ public class PremiumAccountManager {
     }
   }
 
-  public static class getLoanConditionsForGuid_result implements org.apache.thrift.TBase<getLoanConditionsForGuid_result, getLoanConditionsForGuid_result._Fields>, java.io.Serializable, Cloneable, Comparable<getLoanConditionsForGuid_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getLoanConditionsForGuid_result");
+  public static class getLoanConditions_result implements org.apache.thrift.TBase<getLoanConditions_result, getLoanConditions_result._Fields>, java.io.Serializable, Cloneable, Comparable<getLoanConditions_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getLoanConditions_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField E1_FIELD_DESC = new org.apache.thrift.protocol.TField("e1", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField E2_FIELD_DESC = new org.apache.thrift.protocol.TField("e2", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getLoanConditionsForGuid_resultStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getLoanConditionsForGuid_resultTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new getLoanConditions_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getLoanConditions_resultTupleSchemeFactory();
 
     public LoanOffer success; // required
-    public ClientExistsException e; // required
+    public ClientDoesNotExistException e1; // required
+    public InvalidAccountTypeException e2; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      E((short)1, "e");
+      E1((short)1, "e1"),
+      E2((short)2, "e2");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -638,8 +659,10 @@ public class PremiumAccountManager {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // E
-            return E;
+          case 1: // E1
+            return E1;
+          case 2: // E2
+            return E2;
           default:
             return null;
         }
@@ -685,51 +708,59 @@ public class PremiumAccountManager {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LoanOffer.class)));
-      tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ClientExistsException.class)));
+      tmpMap.put(_Fields.E1, new org.apache.thrift.meta_data.FieldMetaData("e1", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ClientDoesNotExistException.class)));
+      tmpMap.put(_Fields.E2, new org.apache.thrift.meta_data.FieldMetaData("e2", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, InvalidAccountTypeException.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getLoanConditionsForGuid_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getLoanConditions_result.class, metaDataMap);
     }
 
-    public getLoanConditionsForGuid_result() {
+    public getLoanConditions_result() {
     }
 
-    public getLoanConditionsForGuid_result(
+    public getLoanConditions_result(
       LoanOffer success,
-      ClientExistsException e)
+      ClientDoesNotExistException e1,
+      InvalidAccountTypeException e2)
     {
       this();
       this.success = success;
-      this.e = e;
+      this.e1 = e1;
+      this.e2 = e2;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getLoanConditionsForGuid_result(getLoanConditionsForGuid_result other) {
+    public getLoanConditions_result(getLoanConditions_result other) {
       if (other.isSetSuccess()) {
         this.success = new LoanOffer(other.success);
       }
-      if (other.isSetE()) {
-        this.e = new ClientExistsException(other.e);
+      if (other.isSetE1()) {
+        this.e1 = new ClientDoesNotExistException(other.e1);
+      }
+      if (other.isSetE2()) {
+        this.e2 = new InvalidAccountTypeException(other.e2);
       }
     }
 
-    public getLoanConditionsForGuid_result deepCopy() {
-      return new getLoanConditionsForGuid_result(this);
+    public getLoanConditions_result deepCopy() {
+      return new getLoanConditions_result(this);
     }
 
     @Override
     public void clear() {
       this.success = null;
-      this.e = null;
+      this.e1 = null;
+      this.e2 = null;
     }
 
     public LoanOffer getSuccess() {
       return this.success;
     }
 
-    public getLoanConditionsForGuid_result setSuccess(LoanOffer success) {
+    public getLoanConditions_result setSuccess(LoanOffer success) {
       this.success = success;
       return this;
     }
@@ -749,27 +780,51 @@ public class PremiumAccountManager {
       }
     }
 
-    public ClientExistsException getE() {
-      return this.e;
+    public ClientDoesNotExistException getE1() {
+      return this.e1;
     }
 
-    public getLoanConditionsForGuid_result setE(ClientExistsException e) {
-      this.e = e;
+    public getLoanConditions_result setE1(ClientDoesNotExistException e1) {
+      this.e1 = e1;
       return this;
     }
 
-    public void unsetE() {
-      this.e = null;
+    public void unsetE1() {
+      this.e1 = null;
     }
 
-    /** Returns true if field e is set (has been assigned a value) and false otherwise */
-    public boolean isSetE() {
-      return this.e != null;
+    /** Returns true if field e1 is set (has been assigned a value) and false otherwise */
+    public boolean isSetE1() {
+      return this.e1 != null;
     }
 
-    public void setEIsSet(boolean value) {
+    public void setE1IsSet(boolean value) {
       if (!value) {
-        this.e = null;
+        this.e1 = null;
+      }
+    }
+
+    public InvalidAccountTypeException getE2() {
+      return this.e2;
+    }
+
+    public getLoanConditions_result setE2(InvalidAccountTypeException e2) {
+      this.e2 = e2;
+      return this;
+    }
+
+    public void unsetE2() {
+      this.e2 = null;
+    }
+
+    /** Returns true if field e2 is set (has been assigned a value) and false otherwise */
+    public boolean isSetE2() {
+      return this.e2 != null;
+    }
+
+    public void setE2IsSet(boolean value) {
+      if (!value) {
+        this.e2 = null;
       }
     }
 
@@ -783,11 +838,19 @@ public class PremiumAccountManager {
         }
         break;
 
-      case E:
+      case E1:
         if (value == null) {
-          unsetE();
+          unsetE1();
         } else {
-          setE((ClientExistsException)value);
+          setE1((ClientDoesNotExistException)value);
+        }
+        break;
+
+      case E2:
+        if (value == null) {
+          unsetE2();
+        } else {
+          setE2((InvalidAccountTypeException)value);
         }
         break;
 
@@ -799,8 +862,11 @@ public class PremiumAccountManager {
       case SUCCESS:
         return getSuccess();
 
-      case E:
-        return getE();
+      case E1:
+        return getE1();
+
+      case E2:
+        return getE2();
 
       }
       throw new java.lang.IllegalStateException();
@@ -815,8 +881,10 @@ public class PremiumAccountManager {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case E:
-        return isSetE();
+      case E1:
+        return isSetE1();
+      case E2:
+        return isSetE2();
       }
       throw new java.lang.IllegalStateException();
     }
@@ -825,12 +893,12 @@ public class PremiumAccountManager {
     public boolean equals(java.lang.Object that) {
       if (that == null)
         return false;
-      if (that instanceof getLoanConditionsForGuid_result)
-        return this.equals((getLoanConditionsForGuid_result)that);
+      if (that instanceof getLoanConditions_result)
+        return this.equals((getLoanConditions_result)that);
       return false;
     }
 
-    public boolean equals(getLoanConditionsForGuid_result that) {
+    public boolean equals(getLoanConditions_result that) {
       if (that == null)
         return false;
       if (this == that)
@@ -845,12 +913,21 @@ public class PremiumAccountManager {
           return false;
       }
 
-      boolean this_present_e = true && this.isSetE();
-      boolean that_present_e = true && that.isSetE();
-      if (this_present_e || that_present_e) {
-        if (!(this_present_e && that_present_e))
+      boolean this_present_e1 = true && this.isSetE1();
+      boolean that_present_e1 = true && that.isSetE1();
+      if (this_present_e1 || that_present_e1) {
+        if (!(this_present_e1 && that_present_e1))
           return false;
-        if (!this.e.equals(that.e))
+        if (!this.e1.equals(that.e1))
+          return false;
+      }
+
+      boolean this_present_e2 = true && this.isSetE2();
+      boolean that_present_e2 = true && that.isSetE2();
+      if (this_present_e2 || that_present_e2) {
+        if (!(this_present_e2 && that_present_e2))
+          return false;
+        if (!this.e2.equals(that.e2))
           return false;
       }
 
@@ -865,15 +942,19 @@ public class PremiumAccountManager {
       if (isSetSuccess())
         hashCode = hashCode * 8191 + success.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetE()) ? 131071 : 524287);
-      if (isSetE())
-        hashCode = hashCode * 8191 + e.hashCode();
+      hashCode = hashCode * 8191 + ((isSetE1()) ? 131071 : 524287);
+      if (isSetE1())
+        hashCode = hashCode * 8191 + e1.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetE2()) ? 131071 : 524287);
+      if (isSetE2())
+        hashCode = hashCode * 8191 + e2.hashCode();
 
       return hashCode;
     }
 
     @Override
-    public int compareTo(getLoanConditionsForGuid_result other) {
+    public int compareTo(getLoanConditions_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -890,12 +971,22 @@ public class PremiumAccountManager {
           return lastComparison;
         }
       }
-      lastComparison = java.lang.Boolean.valueOf(isSetE()).compareTo(other.isSetE());
+      lastComparison = java.lang.Boolean.valueOf(isSetE1()).compareTo(other.isSetE1());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetE()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.e, other.e);
+      if (isSetE1()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.e1, other.e1);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetE2()).compareTo(other.isSetE2());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetE2()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.e2, other.e2);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -917,7 +1008,7 @@ public class PremiumAccountManager {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("getLoanConditionsForGuid_result(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("getLoanConditions_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -928,11 +1019,19 @@ public class PremiumAccountManager {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("e:");
-      if (this.e == null) {
+      sb.append("e1:");
+      if (this.e1 == null) {
         sb.append("null");
       } else {
-        sb.append(this.e);
+        sb.append(this.e1);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("e2:");
+      if (this.e2 == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.e2);
       }
       first = false;
       sb.append(")");
@@ -963,15 +1062,15 @@ public class PremiumAccountManager {
       }
     }
 
-    private static class getLoanConditionsForGuid_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getLoanConditionsForGuid_resultStandardScheme getScheme() {
-        return new getLoanConditionsForGuid_resultStandardScheme();
+    private static class getLoanConditions_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getLoanConditions_resultStandardScheme getScheme() {
+        return new getLoanConditions_resultStandardScheme();
       }
     }
 
-    private static class getLoanConditionsForGuid_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getLoanConditionsForGuid_result> {
+    private static class getLoanConditions_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<getLoanConditions_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getLoanConditionsForGuid_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getLoanConditions_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -990,11 +1089,20 @@ public class PremiumAccountManager {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // E
+            case 1: // E1
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.e = new ClientExistsException();
-                struct.e.read(iprot);
-                struct.setEIsSet(true);
+                struct.e1 = new ClientDoesNotExistException();
+                struct.e1.read(iprot);
+                struct.setE1IsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // E2
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.e2 = new InvalidAccountTypeException();
+                struct.e2.read(iprot);
+                struct.setE2IsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -1010,7 +1118,7 @@ public class PremiumAccountManager {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getLoanConditionsForGuid_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getLoanConditions_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -1019,9 +1127,14 @@ public class PremiumAccountManager {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.e != null) {
-          oprot.writeFieldBegin(E_FIELD_DESC);
-          struct.e.write(oprot);
+        if (struct.e1 != null) {
+          oprot.writeFieldBegin(E1_FIELD_DESC);
+          struct.e1.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.e2 != null) {
+          oprot.writeFieldBegin(E2_FIELD_DESC);
+          struct.e2.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -1030,46 +1143,57 @@ public class PremiumAccountManager {
 
     }
 
-    private static class getLoanConditionsForGuid_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public getLoanConditionsForGuid_resultTupleScheme getScheme() {
-        return new getLoanConditionsForGuid_resultTupleScheme();
+    private static class getLoanConditions_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public getLoanConditions_resultTupleScheme getScheme() {
+        return new getLoanConditions_resultTupleScheme();
       }
     }
 
-    private static class getLoanConditionsForGuid_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getLoanConditionsForGuid_result> {
+    private static class getLoanConditions_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<getLoanConditions_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getLoanConditionsForGuid_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getLoanConditions_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetE()) {
+        if (struct.isSetE1()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetE2()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
-        if (struct.isSetE()) {
-          struct.e.write(oprot);
+        if (struct.isSetE1()) {
+          struct.e1.write(oprot);
+        }
+        if (struct.isSetE2()) {
+          struct.e2.write(oprot);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getLoanConditionsForGuid_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getLoanConditions_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-        java.util.BitSet incoming = iprot.readBitSet(2);
+        java.util.BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = new LoanOffer();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.e = new ClientExistsException();
-          struct.e.read(iprot);
-          struct.setEIsSet(true);
+          struct.e1 = new ClientDoesNotExistException();
+          struct.e1.read(iprot);
+          struct.setE1IsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.e2 = new InvalidAccountTypeException();
+          struct.e2.read(iprot);
+          struct.setE2IsSet(true);
         }
       }
     }

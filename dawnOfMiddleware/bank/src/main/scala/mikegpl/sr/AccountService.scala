@@ -12,12 +12,13 @@ object AccountService {
   private val clientMap = Map[Long, BankClient]()
 
   def getAccountType(person: Person): AccountType =
+  //  todo - take advantage of currency conversion
     if (person.getIncome > IncomeThreshold) AccountType.PREMIUM else AccountType.STANDARD
 
   def registerClient(client: BankClient): Unit = {
     clientMap.synchronized {
       if (clientMap.contains(client.guid))
-        throw new ClientExistsException(client.guid, s"Client with guid ${client.guid} already exists in bank database")
+        throw new ClientExistsException(client.guid)
 
       clientMap += (client.guid -> client)
     }
@@ -26,7 +27,7 @@ object AccountService {
   def getClient(guid: Long): BankClient = {
     clientMap.synchronized {
       if (!clientMap.contains(guid))
-        throw new ClientExistsException(guid, s"Client with guid $guid does not exist")
+        throw new ClientDoesNotExistException(guid)
 
       clientMap(guid)
     }
@@ -42,7 +43,7 @@ object AccountService {
   def loanConditions(guid: Long): LoanOffer = {
     val client = getClient(guid)
     if (client.`type` != AccountType.PREMIUM)
-      throw new ClientExistsException(guid, "Invalid account type")
+      throw new InvalidAccountTypeException(guid, s"Invalid account type: ${client.`type` }")
 
     new LoanOffer(200, 100)
   }

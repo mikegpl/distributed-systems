@@ -12,7 +12,7 @@ public class StandardAccountManager {
 
   public interface Iface {
 
-    public BankClient getClientForGuid(long guid) throws ClientExistsException, org.apache.thrift.TException;
+    public BankClient getClientForGuid(long guid) throws ClientDoesNotExistException, org.apache.thrift.TException;
 
   }
 
@@ -42,7 +42,7 @@ public class StandardAccountManager {
       super(iprot, oprot);
     }
 
-    public BankClient getClientForGuid(long guid) throws ClientExistsException, org.apache.thrift.TException
+    public BankClient getClientForGuid(long guid) throws ClientDoesNotExistException, org.apache.thrift.TException
     {
       send_getClientForGuid(guid);
       return recv_getClientForGuid();
@@ -55,7 +55,7 @@ public class StandardAccountManager {
       sendBase("getClientForGuid", args);
     }
 
-    public BankClient recv_getClientForGuid() throws ClientExistsException, org.apache.thrift.TException
+    public BankClient recv_getClientForGuid() throws ClientDoesNotExistException, org.apache.thrift.TException
     {
       getClientForGuid_result result = new getClientForGuid_result();
       receiveBase(result, "getClientForGuid");
@@ -108,7 +108,7 @@ public class StandardAccountManager {
         prot.writeMessageEnd();
       }
 
-      public BankClient getResult() throws ClientExistsException, org.apache.thrift.TException {
+      public BankClient getResult() throws ClientDoesNotExistException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new java.lang.IllegalStateException("Method call not finished!");
         }
@@ -157,7 +157,7 @@ public class StandardAccountManager {
         getClientForGuid_result result = new getClientForGuid_result();
         try {
           result.success = iface.getClientForGuid(args.guid);
-        } catch (ClientExistsException e) {
+        } catch (ClientDoesNotExistException e) {
           result.e = e;
         }
         return result;
@@ -210,8 +210,8 @@ public class StandardAccountManager {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
             getClientForGuid_result result = new getClientForGuid_result();
-            if (e instanceof ClientExistsException) {
-              result.e = (ClientExistsException) e;
+            if (e instanceof ClientDoesNotExistException) {
+              result.e = (ClientDoesNotExistException) e;
               result.setEIsSet(true);
               msg = result;
             } else if (e instanceof org.apache.thrift.transport.TTransportException) {
@@ -616,7 +616,7 @@ public class StandardAccountManager {
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getClientForGuid_resultTupleSchemeFactory();
 
     public BankClient success; // required
-    public ClientExistsException e; // required
+    public ClientDoesNotExistException e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -686,7 +686,7 @@ public class StandardAccountManager {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, BankClient.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ClientExistsException.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ClientDoesNotExistException.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getClientForGuid_result.class, metaDataMap);
     }
@@ -696,7 +696,7 @@ public class StandardAccountManager {
 
     public getClientForGuid_result(
       BankClient success,
-      ClientExistsException e)
+      ClientDoesNotExistException e)
     {
       this();
       this.success = success;
@@ -711,7 +711,7 @@ public class StandardAccountManager {
         this.success = new BankClient(other.success);
       }
       if (other.isSetE()) {
-        this.e = new ClientExistsException(other.e);
+        this.e = new ClientDoesNotExistException(other.e);
       }
     }
 
@@ -749,11 +749,11 @@ public class StandardAccountManager {
       }
     }
 
-    public ClientExistsException getE() {
+    public ClientDoesNotExistException getE() {
       return this.e;
     }
 
-    public getClientForGuid_result setE(ClientExistsException e) {
+    public getClientForGuid_result setE(ClientDoesNotExistException e) {
       this.e = e;
       return this;
     }
@@ -787,7 +787,7 @@ public class StandardAccountManager {
         if (value == null) {
           unsetE();
         } else {
-          setE((ClientExistsException)value);
+          setE((ClientDoesNotExistException)value);
         }
         break;
 
@@ -992,7 +992,7 @@ public class StandardAccountManager {
               break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.e = new ClientExistsException();
+                struct.e = new ClientDoesNotExistException();
                 struct.e.read(iprot);
                 struct.setEIsSet(true);
               } else { 
@@ -1067,7 +1067,7 @@ public class StandardAccountManager {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.e = new ClientExistsException();
+          struct.e = new ClientDoesNotExistException();
           struct.e.read(iprot);
           struct.setEIsSet(true);
         }

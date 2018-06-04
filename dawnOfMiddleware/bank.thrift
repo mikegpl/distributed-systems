@@ -45,6 +45,14 @@ exception InvalidPeselException {
 }
 
 exception ClientExistsException {
+	1: i64 guid
+}
+
+exception ClientDoesNotExistException {
+	1: i64 guid
+}
+
+exception InvalidAccountTypeException {
 	1: i64 guid,
 	2: string reason
 }
@@ -54,9 +62,9 @@ service RegistrationManager {
 }
 
 service StandardAccountManager {
-	BankClient getClientForGuid(1:i64 guid) throws (1: ClientExistsException e)
+	BankClient getClientForGuid(1:i64 guid) throws (1: ClientDoesNotExistException e)
 }
 
 service PremiumAccountManager extends StandardAccountManager {
-	LoanOffer getLoanConditionsForGuid(1:i64 guid) throws (1: ClientExistsException e)
+	LoanOffer getLoanConditions(1: LoanInquiry inquiry) throws (1: ClientDoesNotExistException e1, 2: InvalidAccountTypeException e2)
 }

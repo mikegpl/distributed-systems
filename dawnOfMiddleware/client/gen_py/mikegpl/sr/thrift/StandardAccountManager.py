@@ -99,7 +99,7 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
-        except ClientExistsException as e:
+        except ClientDoesNotExistException as e:
             msg_type = TMessageType.REPLY
             result.e = e
         except TApplicationException as ex:
@@ -208,7 +208,7 @@ class getClientForGuid_result(object):
                     iprot.skip(ftype)
             elif fid == 1:
                 if ftype == TType.STRUCT:
-                    self.e = ClientExistsException()
+                    self.e = ClientDoesNotExistException()
                     self.e.read(iprot)
                 else:
                     iprot.skip(ftype)
@@ -249,7 +249,7 @@ class getClientForGuid_result(object):
 all_structs.append(getClientForGuid_result)
 getClientForGuid_result.thrift_spec = (
     (0, TType.STRUCT, 'success', [BankClient, None], None, ),  # 0
-    (1, TType.STRUCT, 'e', [ClientExistsException, None], None, ),  # 1
+    (1, TType.STRUCT, 'e', [ClientDoesNotExistException, None], None, ),  # 1
 )
 fix_spec(all_structs)
 del all_structs

@@ -20,10 +20,10 @@ all_structs = []
 
 
 class Iface(mikegpl.sr.thrift.StandardAccountManager.Iface):
-    def getLoanConditionsForGuid(self, guid):
+    def getLoanConditions(self, inquiry):
         """
         Parameters:
-         - guid
+         - inquiry
         """
         pass
 
@@ -32,23 +32,23 @@ class Client(mikegpl.sr.thrift.StandardAccountManager.Client, Iface):
     def __init__(self, iprot, oprot=None):
         mikegpl.sr.thrift.StandardAccountManager.Client.__init__(self, iprot, oprot)
 
-    def getLoanConditionsForGuid(self, guid):
+    def getLoanConditions(self, inquiry):
         """
         Parameters:
-         - guid
+         - inquiry
         """
-        self.send_getLoanConditionsForGuid(guid)
-        return self.recv_getLoanConditionsForGuid()
+        self.send_getLoanConditions(inquiry)
+        return self.recv_getLoanConditions()
 
-    def send_getLoanConditionsForGuid(self, guid):
-        self._oprot.writeMessageBegin('getLoanConditionsForGuid', TMessageType.CALL, self._seqid)
-        args = getLoanConditionsForGuid_args()
-        args.guid = guid
+    def send_getLoanConditions(self, inquiry):
+        self._oprot.writeMessageBegin('getLoanConditions', TMessageType.CALL, self._seqid)
+        args = getLoanConditions_args()
+        args.inquiry = inquiry
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
 
-    def recv_getLoanConditionsForGuid(self):
+    def recv_getLoanConditions(self):
         iprot = self._iprot
         (fname, mtype, rseqid) = iprot.readMessageBegin()
         if mtype == TMessageType.EXCEPTION:
@@ -56,20 +56,22 @@ class Client(mikegpl.sr.thrift.StandardAccountManager.Client, Iface):
             x.read(iprot)
             iprot.readMessageEnd()
             raise x
-        result = getLoanConditionsForGuid_result()
+        result = getLoanConditions_result()
         result.read(iprot)
         iprot.readMessageEnd()
         if result.success is not None:
             return result.success
-        if result.e is not None:
-            raise result.e
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "getLoanConditionsForGuid failed: unknown result")
+        if result.e1 is not None:
+            raise result.e1
+        if result.e2 is not None:
+            raise result.e2
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getLoanConditions failed: unknown result")
 
 
 class Processor(mikegpl.sr.thrift.StandardAccountManager.Processor, Iface, TProcessor):
     def __init__(self, handler):
         mikegpl.sr.thrift.StandardAccountManager.Processor.__init__(self, handler)
-        self._processMap["getLoanConditionsForGuid"] = Processor.process_getLoanConditionsForGuid
+        self._processMap["getLoanConditions"] = Processor.process_getLoanConditions
 
     def process(self, iprot, oprot):
         (name, type, seqid) = iprot.readMessageBegin()
@@ -86,19 +88,22 @@ class Processor(mikegpl.sr.thrift.StandardAccountManager.Processor, Iface, TProc
             self._processMap[name](self, seqid, iprot, oprot)
         return True
 
-    def process_getLoanConditionsForGuid(self, seqid, iprot, oprot):
-        args = getLoanConditionsForGuid_args()
+    def process_getLoanConditions(self, seqid, iprot, oprot):
+        args = getLoanConditions_args()
         args.read(iprot)
         iprot.readMessageEnd()
-        result = getLoanConditionsForGuid_result()
+        result = getLoanConditions_result()
         try:
-            result.success = self._handler.getLoanConditionsForGuid(args.guid)
+            result.success = self._handler.getLoanConditions(args.inquiry)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
-        except ClientExistsException as e:
+        except ClientDoesNotExistException as e1:
             msg_type = TMessageType.REPLY
-            result.e = e
+            result.e1 = e1
+        except InvalidAccountTypeException as e2:
+            msg_type = TMessageType.REPLY
+            result.e2 = e2
         except TApplicationException as ex:
             logging.exception('TApplication exception in handler')
             msg_type = TMessageType.EXCEPTION
@@ -107,7 +112,7 @@ class Processor(mikegpl.sr.thrift.StandardAccountManager.Processor, Iface, TProc
             logging.exception('Unexpected exception in handler')
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("getLoanConditionsForGuid", msg_type, seqid)
+        oprot.writeMessageBegin("getLoanConditions", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -115,15 +120,15 @@ class Processor(mikegpl.sr.thrift.StandardAccountManager.Processor, Iface, TProc
 # HELPER FUNCTIONS AND STRUCTURES
 
 
-class getLoanConditionsForGuid_args(object):
+class getLoanConditions_args(object):
     """
     Attributes:
-     - guid
+     - inquiry
     """
 
 
-    def __init__(self, guid=None,):
-        self.guid = guid
+    def __init__(self, inquiry=None,):
+        self.inquiry = inquiry
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -135,8 +140,9 @@ class getLoanConditionsForGuid_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I64:
-                    self.guid = iprot.readI64()
+                if ftype == TType.STRUCT:
+                    self.inquiry = LoanInquiry()
+                    self.inquiry.read(iprot)
                 else:
                     iprot.skip(ftype)
             else:
@@ -148,10 +154,10 @@ class getLoanConditionsForGuid_args(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('getLoanConditionsForGuid_args')
-        if self.guid is not None:
-            oprot.writeFieldBegin('guid', TType.I64, 1)
-            oprot.writeI64(self.guid)
+        oprot.writeStructBegin('getLoanConditions_args')
+        if self.inquiry is not None:
+            oprot.writeFieldBegin('inquiry', TType.STRUCT, 1)
+            self.inquiry.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -169,24 +175,26 @@ class getLoanConditionsForGuid_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-all_structs.append(getLoanConditionsForGuid_args)
-getLoanConditionsForGuid_args.thrift_spec = (
+all_structs.append(getLoanConditions_args)
+getLoanConditions_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'guid', None, None, ),  # 1
+    (1, TType.STRUCT, 'inquiry', [LoanInquiry, None], None, ),  # 1
 )
 
 
-class getLoanConditionsForGuid_result(object):
+class getLoanConditions_result(object):
     """
     Attributes:
      - success
-     - e
+     - e1
+     - e2
     """
 
 
-    def __init__(self, success=None, e=None,):
+    def __init__(self, success=None, e1=None, e2=None,):
         self.success = success
-        self.e = e
+        self.e1 = e1
+        self.e2 = e2
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -205,8 +213,14 @@ class getLoanConditionsForGuid_result(object):
                     iprot.skip(ftype)
             elif fid == 1:
                 if ftype == TType.STRUCT:
-                    self.e = ClientExistsException()
-                    self.e.read(iprot)
+                    self.e1 = ClientDoesNotExistException()
+                    self.e1.read(iprot)
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRUCT:
+                    self.e2 = InvalidAccountTypeException()
+                    self.e2.read(iprot)
                 else:
                     iprot.skip(ftype)
             else:
@@ -218,14 +232,18 @@ class getLoanConditionsForGuid_result(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('getLoanConditionsForGuid_result')
+        oprot.writeStructBegin('getLoanConditions_result')
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.STRUCT, 0)
             self.success.write(oprot)
             oprot.writeFieldEnd()
-        if self.e is not None:
-            oprot.writeFieldBegin('e', TType.STRUCT, 1)
-            self.e.write(oprot)
+        if self.e1 is not None:
+            oprot.writeFieldBegin('e1', TType.STRUCT, 1)
+            self.e1.write(oprot)
+            oprot.writeFieldEnd()
+        if self.e2 is not None:
+            oprot.writeFieldBegin('e2', TType.STRUCT, 2)
+            self.e2.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -243,10 +261,11 @@ class getLoanConditionsForGuid_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-all_structs.append(getLoanConditionsForGuid_result)
-getLoanConditionsForGuid_result.thrift_spec = (
+all_structs.append(getLoanConditions_result)
+getLoanConditions_result.thrift_spec = (
     (0, TType.STRUCT, 'success', [LoanOffer, None], None, ),  # 0
-    (1, TType.STRUCT, 'e', [ClientExistsException, None], None, ),  # 1
+    (1, TType.STRUCT, 'e1', [ClientDoesNotExistException, None], None, ),  # 1
+    (2, TType.STRUCT, 'e2', [InvalidAccountTypeException, None], None, ),  # 2
 )
 fix_spec(all_structs)
 del all_structs

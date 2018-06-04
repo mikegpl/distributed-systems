@@ -24,7 +24,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] [-novalidate] [-ca_certs certs] [-keyfile keyfile] [-certfile certfile] function [arg1 [arg2...]]')
     print('')
     print('Functions:')
-    print('  LoanOffer getLoanConditionsForGuid(i64 guid)')
+    print('  LoanOffer getLoanConditions(LoanInquiry inquiry)')
     print('  BankClient getClientForGuid(i64 guid)')
     print('')
     sys.exit(0)
@@ -105,11 +105,11 @@ protocol = TBinaryProtocol(transport)
 client = PremiumAccountManager.Client(protocol)
 transport.open()
 
-if cmd == 'getLoanConditionsForGuid':
+if cmd == 'getLoanConditions':
     if len(args) != 1:
-        print('getLoanConditionsForGuid requires 1 args')
+        print('getLoanConditions requires 1 args')
         sys.exit(1)
-    pp.pprint(client.getLoanConditionsForGuid(eval(args[0]),))
+    pp.pprint(client.getLoanConditions(eval(args[0]),))
 
 elif cmd == 'getClientForGuid':
     if len(args) != 1:
