@@ -17,3 +17,4 @@ val thriftDeps = Seq("org.apache.thrift" % "libthrift" % thriftVersion)
 
 libraryDependencies ++= grpcDeps
 libraryDependencies ++= thriftDeps
+libraryDependencies += "com.google.collections" % "google-collections" % "1.0-rc2"
