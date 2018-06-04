@@ -12,7 +12,7 @@ public class PremiumAccountManager {
 
   public interface Iface extends StandardAccountManager.Iface {
 
-    public LoanOffer getLoanConditionsForGuid(long guid) throws InvalidGuid, org.apache.thrift.TException;
+    public LoanOffer getLoanConditionsForGuid(long guid) throws ClientExistsException, org.apache.thrift.TException;
 
   }
 
@@ -42,7 +42,7 @@ public class PremiumAccountManager {
       super(iprot, oprot);
     }
 
-    public LoanOffer getLoanConditionsForGuid(long guid) throws InvalidGuid, org.apache.thrift.TException
+    public LoanOffer getLoanConditionsForGuid(long guid) throws ClientExistsException, org.apache.thrift.TException
     {
       send_getLoanConditionsForGuid(guid);
       return recv_getLoanConditionsForGuid();
@@ -55,7 +55,7 @@ public class PremiumAccountManager {
       sendBase("getLoanConditionsForGuid", args);
     }
 
-    public LoanOffer recv_getLoanConditionsForGuid() throws InvalidGuid, org.apache.thrift.TException
+    public LoanOffer recv_getLoanConditionsForGuid() throws ClientExistsException, org.apache.thrift.TException
     {
       getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
       receiveBase(result, "getLoanConditionsForGuid");
@@ -108,7 +108,7 @@ public class PremiumAccountManager {
         prot.writeMessageEnd();
       }
 
-      public LoanOffer getResult() throws InvalidGuid, org.apache.thrift.TException {
+      public LoanOffer getResult() throws ClientExistsException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new java.lang.IllegalStateException("Method call not finished!");
         }
@@ -157,7 +157,7 @@ public class PremiumAccountManager {
         getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
         try {
           result.success = iface.getLoanConditionsForGuid(args.guid);
-        } catch (InvalidGuid e) {
+        } catch (ClientExistsException e) {
           result.e = e;
         }
         return result;
@@ -210,8 +210,8 @@ public class PremiumAccountManager {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
             getLoanConditionsForGuid_result result = new getLoanConditionsForGuid_result();
-            if (e instanceof InvalidGuid) {
-              result.e = (InvalidGuid) e;
+            if (e instanceof ClientExistsException) {
+              result.e = (ClientExistsException) e;
               result.setEIsSet(true);
               msg = result;
             } else if (e instanceof org.apache.thrift.transport.TTransportException) {
@@ -616,7 +616,7 @@ public class PremiumAccountManager {
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new getLoanConditionsForGuid_resultTupleSchemeFactory();
 
     public LoanOffer success; // required
-    public InvalidGuid e; // required
+    public ClientExistsException e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -686,7 +686,7 @@ public class PremiumAccountManager {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LoanOffer.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, InvalidGuid.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ClientExistsException.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getLoanConditionsForGuid_result.class, metaDataMap);
     }
@@ -696,7 +696,7 @@ public class PremiumAccountManager {
 
     public getLoanConditionsForGuid_result(
       LoanOffer success,
-      InvalidGuid e)
+      ClientExistsException e)
     {
       this();
       this.success = success;
@@ -711,7 +711,7 @@ public class PremiumAccountManager {
         this.success = new LoanOffer(other.success);
       }
       if (other.isSetE()) {
-        this.e = new InvalidGuid(other.e);
+        this.e = new ClientExistsException(other.e);
       }
     }
 
@@ -749,11 +749,11 @@ public class PremiumAccountManager {
       }
     }
 
-    public InvalidGuid getE() {
+    public ClientExistsException getE() {
       return this.e;
     }
 
-    public getLoanConditionsForGuid_result setE(InvalidGuid e) {
+    public getLoanConditionsForGuid_result setE(ClientExistsException e) {
       this.e = e;
       return this;
     }
@@ -787,7 +787,7 @@ public class PremiumAccountManager {
         if (value == null) {
           unsetE();
         } else {
-          setE((InvalidGuid)value);
+          setE((ClientExistsException)value);
         }
         break;
 
@@ -992,7 +992,7 @@ public class PremiumAccountManager {
               break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.e = new InvalidGuid();
+                struct.e = new ClientExistsException();
                 struct.e.read(iprot);
                 struct.setEIsSet(true);
               } else { 
@@ -1067,7 +1067,7 @@ public class PremiumAccountManager {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.e = new InvalidGuid();
+          struct.e = new ClientExistsException();
           struct.e.read(iprot);
           struct.setEIsSet(true);
         }
