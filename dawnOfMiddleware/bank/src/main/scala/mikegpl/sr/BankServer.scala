@@ -2,8 +2,8 @@ package mikegpl.sr
 
 import java.net.InetSocketAddress
 
-import mikegpl.sr.services.internal.{PremiumLoanService, SynchronizedDbService}
-import mikegpl.sr.services.remote.{PremiumAccountManagerService, RegistrationManagerService, StandardAccountManagerService, StreamingCurrencyService}
+import mikegpl.sr.bankServices.internal.{PremiumLoanService, SynchronizedDbService}
+import mikegpl.sr.bankServices.remote.{PremiumAccountManagerService, RegistrationManagerService, StandardAccountManagerService, StreamingCurrencyService}
 import mikegpl.sr.thrift.{PremiumAccountManager, RegistrationManager, StandardAccountManager}
 import org.apache.thrift.TMultiplexedProcessor
 import org.apache.thrift.protocol.TBinaryProtocol

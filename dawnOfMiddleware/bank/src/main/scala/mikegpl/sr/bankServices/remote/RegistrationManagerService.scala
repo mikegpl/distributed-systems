@@ -1,6 +1,6 @@
-package mikegpl.sr.services.remote
+package mikegpl.sr.bankServices.remote
 
-import mikegpl.sr.services.{BankUtils, CurrencyService, DbService}
+import mikegpl.sr.bankServices.{BankUtils, CurrencyService, DbService}
 import mikegpl.sr.thrift.{BankClient, InvalidPeselException, Person, RegistrationManager}
 
 class RegistrationManagerService(dbService: DbService, currencyService: CurrencyService) extends RegistrationManager.Iface {

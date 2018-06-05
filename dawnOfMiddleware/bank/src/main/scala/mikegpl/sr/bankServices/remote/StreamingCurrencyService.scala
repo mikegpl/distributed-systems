@@ -1,11 +1,11 @@
-package mikegpl.sr.services.remote
+package mikegpl.sr.bankServices.remote
 
 import java.util.concurrent.Executors
 
 import io.grpc.{ManagedChannelBuilder, StatusRuntimeException}
 import mikegpl.sr.CurrencyServer
+import mikegpl.sr.bankServices.CurrencyService
 import mikegpl.sr.grpc.{CurrencyServiceGrpc, CurrencyStateRequest, Currency => gCurrency}
-import mikegpl.sr.services.CurrencyService
 import mikegpl.sr.thrift.{Currency => tCurrency}
 
 import scala.collection.JavaConverters._

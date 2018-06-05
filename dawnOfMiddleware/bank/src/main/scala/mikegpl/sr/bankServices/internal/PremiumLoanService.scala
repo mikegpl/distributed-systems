@@ -1,6 +1,6 @@
-package mikegpl.sr.services.internal
+package mikegpl.sr.bankServices.internal
 
-import mikegpl.sr.services.{BankUtils, CurrencyService, LoanService}
+import mikegpl.sr.bankServices.{BankUtils, CurrencyService, LoanService}
 import mikegpl.sr.thrift.{InvalidAccountTypeException, LoanInquiry, LoanOffer}
 
 class PremiumLoanService(dbService: SynchronizedDbService, currencyService: CurrencyService) extends LoanService {

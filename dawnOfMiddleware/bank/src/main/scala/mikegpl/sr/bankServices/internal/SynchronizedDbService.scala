@@ -1,6 +1,6 @@
-package mikegpl.sr.services.internal
+package mikegpl.sr.bankServices.internal
 
-import mikegpl.sr.services.DbService
+import mikegpl.sr.bankServices.DbService
 import mikegpl.sr.thrift.{BankClient, ClientDoesNotExistException, ClientExistsException}
 
 import scala.collection.mutable.{HashMap => Map}

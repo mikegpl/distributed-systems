@@ -1,4 +1,4 @@
-package mikegpl.sr.services
+package mikegpl.sr.bankServices
 
 import mikegpl.sr.grpc.{Currency => gCurrency}
 import mikegpl.sr.thrift.{BankClient, LoanInquiry, LoanOffer, Currency => tCurrency}

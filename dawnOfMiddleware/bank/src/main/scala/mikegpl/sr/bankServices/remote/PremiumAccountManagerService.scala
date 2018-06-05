@@ -1,6 +1,6 @@
-package mikegpl.sr.services.remote
+package mikegpl.sr.bankServices.remote
 
-import mikegpl.sr.services.{DbService, LoanService}
+import mikegpl.sr.bankServices.{DbService, LoanService}
 import mikegpl.sr.thrift.{LoanInquiry, LoanOffer, PremiumAccountManager}
 
 class PremiumAccountManagerService(dbService: DbService, loanService: LoanService)

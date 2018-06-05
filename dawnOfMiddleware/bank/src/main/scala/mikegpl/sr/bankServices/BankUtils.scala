@@ -1,4 +1,4 @@
-package mikegpl.sr.services
+package mikegpl.sr.bankServices
 
 import mikegpl.sr.thrift._
 

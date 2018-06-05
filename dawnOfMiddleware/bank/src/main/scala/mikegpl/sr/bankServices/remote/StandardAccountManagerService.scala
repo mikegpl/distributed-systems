@@ -1,6 +1,6 @@
-package mikegpl.sr.services.remote
+package mikegpl.sr.bankServices.remote
 
-import mikegpl.sr.services.DbService
+import mikegpl.sr.bankServices.DbService
 import mikegpl.sr.thrift.{BankClient, StandardAccountManager}
 
 class StandardAccountManagerService(dbService: DbService) extends StandardAccountManager.Iface {
