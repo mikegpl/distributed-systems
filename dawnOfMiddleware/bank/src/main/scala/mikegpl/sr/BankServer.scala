@@ -19,7 +19,7 @@ object BankServer {
     val currencyService = new StreamingCurrencyService().init()
     val loanService = new PremiumLoanService(dbService, currencyService)
 
-    val registrationServiceProcessor = new RegistrationManager.Processor(new RegistrationManagerService(dbService))
+    val registrationServiceProcessor = new RegistrationManager.Processor(new RegistrationManagerService(dbService, currencyService))
     val standardServiceProcessor = new StandardAccountManager.Processor(new StandardAccountManagerService(dbService))
     val premiumServiceProcessor = new PremiumAccountManager.Processor(new PremiumAccountManagerService(dbService, loanService))
 

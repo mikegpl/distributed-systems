@@ -9,9 +9,10 @@ object BankUtils {
   private val IncomeThreshold = 1919.0
   private val PeselLength = 11
 
-  def getAccountType(person: Person): AccountType =
-  //  todo - take advantage of currency conversion
-    if (person.getIncome > IncomeThreshold) AccountType.PREMIUM else AccountType.STANDARD
+  def getAccountType(person: Person, currencyService: CurrencyService): AccountType = {
+    val income = person.getIncome * currencyService.getConversionRate(person.baseCurrency)
+    if (income > IncomeThreshold) AccountType.PREMIUM else AccountType.STANDARD
+  }
 
   def isPeselValid(pesel: String): Boolean = {
     if (pesel.length == PeselLength)
