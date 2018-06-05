@@ -21,6 +21,7 @@ class SimpleCurrencyDataProvider extends CurrencyDataProvider {
   }
 
   override def subscribe(currencies: Set[Currency]): Observable[CurrencyConverter] = {
+    println(s"New subscriber registered: ${currencies.mkString(" ")}")
     val observable = ReplaySubject[CurrencyConverter]()
     subscriberMap.synchronized {
       subscriberMap += (observable -> currencies)
@@ -29,6 +30,7 @@ class SimpleCurrencyDataProvider extends CurrencyDataProvider {
   }
 
   override def newConverter(currencyConverter: CurrencyConverter): Unit = {
+    println(s"New converter registered: ${currencyConverter.getName}, ${currencyConverter.getRate}")
     converters.synchronized {
       converters += currencyConverter
     }
