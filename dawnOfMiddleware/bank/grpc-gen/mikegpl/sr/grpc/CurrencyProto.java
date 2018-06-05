@@ -25,11 +25,6 @@ public final class CurrencyProto {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_CurrencyStateRequest_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_StreamConverterStateRequest_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_StreamConverterStateRequest_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_ConvertersState_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -46,16 +41,14 @@ public final class CurrencyProto {
       "\n\016currency.proto\":\n\021CurrencyConverter\022\027\n" +
       "\004name\030\001 \001(\0162\t.Currency\022\014\n\004rate\030\002 \001(\001\"3\n\024" +
       "CurrencyStateRequest\022\033\n\010currency\030\001 \003(\0162\t" +
-      ".Currency\":\n\033StreamConverterStateRequest" +
-      "\022\033\n\010currency\030\001 \003(\0162\t.Currency\"8\n\017Convert" +
-      "ersState\022%\n\tconverter\030\001 \003(\0132\022.CurrencyCo" +
-      "nverter*.\n\010Currency\022\007\n\003PLN\020\000\022\007\n\003USD\020\001\022\007\n" +
-      "\003EUR\020\002\022\007\n\003VEF\020\0032\233\001\n\017CurrencyService\022>\n\021C" +
-      "urrentConverters\022\025.CurrencyStateRequest\032" +
-      "\020.ConvertersState\"\000\022H\n\020StreamConverters\022" +
-      "\034.StreamConverterStateRequest\032\022.Currency" +
-      "Converter\"\0000\001B\"\n\017mikegpl.sr.grpcB\rCurren" +
-      "cyProtoP\001b\006proto3"
+      ".Currency\"8\n\017ConvertersState\022%\n\tconverte" +
+      "r\030\001 \003(\0132\022.CurrencyConverter*.\n\010Currency\022" +
+      "\007\n\003PLN\020\000\022\007\n\003USD\020\001\022\007\n\003EUR\020\002\022\007\n\003VEF\020\0032\224\001\n\017" +
+      "CurrencyService\022>\n\021CurrentConverters\022\025.C" +
+      "urrencyStateRequest\032\020.ConvertersState\"\000\022" +
+      "A\n\020StreamConverters\022\025.CurrencyStateReque" +
+      "st\032\022.CurrencyConverter\"\0000\001B\"\n\017mikegpl.sr" +
+      ".grpcB\rCurrencyProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -81,14 +74,8 @@ public final class CurrencyProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CurrencyStateRequest_descriptor,
         new java.lang.String[] { "Currency", });
-    internal_static_StreamConverterStateRequest_descriptor =
-      getDescriptor().getMessageTypes().get(2);
-    internal_static_StreamConverterStateRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_StreamConverterStateRequest_descriptor,
-        new java.lang.String[] { "Currency", });
     internal_static_ConvertersState_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(2);
     internal_static_ConvertersState_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ConvertersState_descriptor,

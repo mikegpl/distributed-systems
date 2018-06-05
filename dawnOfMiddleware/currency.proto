@@ -20,15 +20,11 @@ message CurrencyStateRequest {
     repeated Currency currency = 1;
 }
 
-message StreamConverterStateRequest {
-    repeated Currency currency = 1;
-}
-
 message ConvertersState {
     repeated CurrencyConverter converter = 1;
 }
 
 service CurrencyService {
     rpc CurrentConverters(CurrencyStateRequest) returns (ConvertersState) {}
-    rpc StreamConverters(StreamConverterStateRequest) returns (stream CurrencyConverter) {}
+    rpc StreamConverters(CurrencyStateRequest) returns (stream CurrencyConverter) {}
 }
