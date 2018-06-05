@@ -18,10 +18,12 @@ object BankServer {
     val dbService = new SynchronizedDbService
     val currencyService = new StreamingCurrencyService().init()
     val loanService = new PremiumLoanService(dbService, currencyService)
+    println("Created internal services")
 
     val registrationServiceProcessor = new RegistrationManager.Processor(new RegistrationManagerService(dbService, currencyService))
     val standardServiceProcessor = new StandardAccountManager.Processor(new StandardAccountManagerService(dbService))
     val premiumServiceProcessor = new PremiumAccountManager.Processor(new PremiumAccountManagerService(dbService, loanService))
+    println("Created remote services")
 
     val socket = new TServerSocket(new InetSocketAddress(Host, Port))
     val protocol = new TBinaryProtocol.Factory()

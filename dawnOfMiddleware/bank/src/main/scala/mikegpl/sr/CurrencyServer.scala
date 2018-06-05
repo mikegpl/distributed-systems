@@ -11,7 +11,8 @@ import scala.collection.mutable.{HashMap => Map}
 import scala.util.Random
 
 object CurrencyServer {
-  private val Port = 9191
+  val Host = "localhost"
+  val Port = 19191
   private val Rates = Map(PLN -> 1.0, USD -> 3.5, EUR -> 4.0, VEF -> 1e-5)
 
 
@@ -30,12 +31,11 @@ object CurrencyServer {
       override def run(): Unit = {
         println("Currency value changing service started")
         while (true) {
-          Thread.sleep(3000)
+          Thread.sleep(10000)
           val currency = Currency.forNumber(Random.nextInt(Rates.size))
           val changeSign = Random.nextInt().signum
-          val change = Rates(currency) * (Random.nextDouble() / 100)
-          val newValue = change * changeSign
-          println(s"Change detected: $currency changed from ${Rates(currency)} by $newValue")
+          val change = Random.nextDouble() / 100
+          val newValue = Rates(currency) * (1 + change * changeSign)
           Rates.put(currency, newValue)
           dataProvider.newConverter(toConverter(currency, newValue))
         }
@@ -48,5 +48,4 @@ object CurrencyServer {
     .setName(currency)
     .setRate(rate)
     .build()
-
 }
