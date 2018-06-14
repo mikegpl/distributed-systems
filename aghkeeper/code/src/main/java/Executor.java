@@ -7,6 +7,7 @@
  * the program if the znode goes away.
  */
 
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -16,45 +17,58 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class Executor
         implements Watcher, Runnable, DataMonitor.DataMonitorListener {
-    String znode;
+    private final DataMonitor dm;
 
-    DataMonitor dm;
+    private final ZooKeeper zk;
 
-    ZooKeeper zk;
+    private final String filename;
 
-    String filename;
+    private final String exec[];
 
-    String exec[];
+    private Process child = null;
 
-    Process child;
-
-    public Executor(String hostPort, String znode, String filename,
-                    String exec[]) throws KeeperException, IOException {
+    private Executor(String hostWithPort, String znode, String filename,
+                     String exec[]) throws KeeperException, IOException {
         this.filename = filename;
         this.exec = exec;
-        zk = new ZooKeeper(hostPort, 3000, this);
-        dm = new DataMonitor(zk, znode, null, this);
+        this.zk = new ZooKeeper(hostWithPort, 3000, this);
+        this.dm = new DataMonitor(zk, znode, null, this);
     }
 
-    /**
-     * @param args
-     */
+
     public static void main(String[] args) {
         if (args.length < 4) {
             System.err
                     .println("USAGE: Executor hostPort znode filename program [args ...]");
             System.exit(2);
         }
-        String hostPort = args[0];
+        String hostWithPort = args[0];
         String znode = args[1];
         String filename = args[2];
         String exec[] = new String[args.length - 3];
         System.arraycopy(args, 3, exec, 0, exec.length);
+        Properties props = new Properties();
         try {
-            new Executor(hostPort, znode, filename, exec).run();
+            InputStream configStream = Executor.class.getClassLoader().getResourceAsStream("log4j.properties");
+            System.out.println(configStream);
+            props.load(configStream);
+            configStream.close();
+        } catch (IOException e) {
+            System.out.println("Error: Cannot laod configuration file ");
+        }
+        props.setProperty("log4j.appender.FILE.file", "zoo.log");
+        PropertyConfigurator.configure(props);
+
+        try {
+            System.out.println(String.format("Creating executor for %s %s %s", hostWithPort, znode, filename));
+            new Executor(hostWithPort, znode, filename, exec).run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,13 +82,22 @@ public class Executor
     }
 
     public void run() {
-        try {
-            synchronized (this) {
-                while (!dm.dead) {
-                    wait();
+        Scanner input = new Scanner(System.in);
+        boolean running = true;
+        synchronized (this) {
+            while (!dm.isDead() && running) {
+                String[] command = input.nextLine().split(" ");
+                switch (command[0]) {
+                    case "ls":
+                        dm.printTree("/grabek", 0);
+                        break;
+                    case "q":
+                        closing(0);
+                        Optional.ofNullable(child).filter(Objects::nonNull).ifPresent(Process::destroy);
+                        running = false;
+                        break;
                 }
             }
-        } catch (InterruptedException e) {
         }
     }
 

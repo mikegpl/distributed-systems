@@ -3,32 +3,33 @@
  * node. It uses asynchronous ZooKeeper APIs.
  */
 
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.AsyncCallback.StatCallback;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.Code;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class DataMonitor implements Watcher, StatCallback {
+public class DataMonitor implements Watcher, StatCallback, AsyncCallback.ChildrenCallback {
 
-    ZooKeeper zk;
+    private final ZooKeeper zk;
 
-    String znode;
+    private final String znode;
 
-    Watcher chainedWatcher;
+    private final Watcher chainedWatcher;
 
-    boolean dead;
+    private final DataMonitorListener listener;
 
-    DataMonitorListener listener;
+    private boolean dead;
 
-    byte prevData[];
+    private byte prevData[];
 
-    public DataMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher,
-                       DataMonitorListener listener) {
+    private List<String> children = new ArrayList<>();
+
+    DataMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher,
+                DataMonitorListener listener) {
         this.zk = zk;
         this.znode = znode;
         this.chainedWatcher = chainedWatcher;
@@ -36,23 +37,49 @@ public class DataMonitor implements Watcher, StatCallback {
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
         zk.exists(znode, true, this, null);
+        zk.getChildren(znode, true, this, null);
+    }
+
+    boolean isDead() {
+        return dead;
+    }
+
+    @Override
+    public void processResult(int rc, String path, Object ctx, List<String> children) {
+        if (path.equals(znode) && children != null) {
+            this.children = children;
+            System.out.println(String.format("Current number of children of %s : (direct - %d, non-direct - %d)", znode, children.size(), getChildrenCount(znode)));
+        }
+    }
+
+    private int getChildrenCount(String node) {
+        try {
+            List<String> children = zk.getChildren(node, false);
+            return children.size() + children.stream().map(c -> node + '/' + c).mapToInt(this::getChildrenCount).sum();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return 0;
     }
 
     /**
      * Other classes use the DataMonitor by implementing this method
      */
     public interface DataMonitorListener {
-        /**
-         * The existence status of the node has changed.
-         */
         void exists(byte data[]);
 
-        /**
-         * The ZooKeeper session is no longer valid.
-         *
-         * @param rc the ZooKeeper reason code
-         */
         void closing(int rc);
+    }
+
+    void printTree(String parent, int depth) {
+        try {
+            String tabPrefix = new String(new char[depth]).replace("\0", "\t");
+            String paths[] = parent.split("/");
+            String name = paths[paths.length - 1];
+            System.out.println(tabPrefix + "/" + name);
+            zk.getChildren(parent, false).forEach(child -> printTree(parent + "/" + child, depth + 1));
+        } catch (Exception e) {
+        }
     }
 
     public void process(WatchedEvent event) {
@@ -73,11 +100,9 @@ public class DataMonitor implements Watcher, StatCallback {
                     listener.closing(KeeperException.Code.SessionExpired);
                     break;
             }
-        } else {
-            if (path != null && path.equals(znode)) {
-                // Something has changed on the node, let's find out
-                zk.exists(znode, true, this, null);
-            }
+        } else if (path != null && path.equals(znode)) {
+            zk.exists(znode, true, this, null);
+            zk.getChildren(znode, true, this, null);
         }
         if (chainedWatcher != null) {
             chainedWatcher.process(event);
